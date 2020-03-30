@@ -5,7 +5,7 @@ import '../helpers/NetworkHelper.dart';
 import 'dart:async';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../globals/GRID.dart';
 
 GetIt locator = GetIt.asNewInstance();
 
@@ -17,20 +17,14 @@ void setupLocator() {
   locator.registerSingleton(Call());
 }
 
-// for globally available data
-class GRID{
-  int number;
+int number;
 
-  static final GRID _appData = new GRID._internal();
+Call _service = locator<Call>();
 
-  factory GRID() {
-    return _appData;
-  }
-  GRID._internal();
+StreamSubscription streamSubscription;
 
-}
-
-final grid = GRID();
+Future<List> _futureStudent;
+MainDataPage mdp = MainDataPage();
 
 class HomePage extends StatefulWidget {
 
@@ -40,15 +34,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
-
-  int number;
-
-  Call _service = locator<Call>();
-
-  StreamSubscription streamSubscription;
-
-  Future<List> _futureStudent;
-  MainDataPage mdp = MainDataPage();
 
   @override
   void initState() {
@@ -91,8 +76,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Column(
@@ -117,11 +100,18 @@ class _HomePageState extends State<HomePage> {
                             ),
                             keyboardType: TextInputType.number,
                             validator: (value) {
+
                               if (value.isEmpty) {
                                 return 'Please enter some text';
                               }
                               else if(int.parse(value) <= 0){
                                 return 'Enter only positive number';
+                              }
+                              try{
+                                number = int.parse(value);
+                              }
+                              catch(e){
+                                return 'Enter only numeric value';
                               }
                               setState(() {
                                 number = int.parse(value);
@@ -152,7 +142,6 @@ class _HomePageState extends State<HomePage> {
               : Expanded(
             child: mdp.getData(number, _futureStudent),
           ),
-
         ],
       ),
     );

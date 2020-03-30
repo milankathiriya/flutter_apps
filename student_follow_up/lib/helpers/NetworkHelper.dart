@@ -12,23 +12,30 @@ Future<List> getStudent(int number) async {
   FormData formData = new FormData.fromMap({
     "gr_id": number,
   });
-  response = await dio.post(
-      "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
-      data: formData);
+  try {
+    response = await dio.post(
+        "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
+        data: formData);
+  }
+  catch(e) {
+    response = await dio.post(
+        "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
+        data: formData);
+  }
+    if (response.statusCode == 200) {
+      students.clear();
+      students.add(Student.fromJson(response.data['data'][0]));
+      return students;
+    }
+    else if(response.statusCode == 503){
+      print("Server Error bcz of 503");
+      throw DioError();
+    }
+    else {
+      throw Exception('Failed to load student data');
+    }
+  }
 
-  if (response.statusCode == 200) {
-    students.clear();
-    students.add(Student.fromJson(response.data['data'][0]));
-    return students;
-  }
-  else if(response.statusCode == 503){
-    print("Server Error bcz of 503");
-    throw DioError();
-  }
-  else {
-    throw Exception('Failed to load student data');
-  }
-}
 
 getLoggedInResponse(String email, String password) async {
   FormData loginFormData =

@@ -27,7 +27,6 @@ dependencies:
   get_it: ^4.0.1
   phone_state_i: ^0.0.3
   dio: ^3.0.9
-  cached_network_image: ^2.0.0
   bottom_navy_bar: ^5.3.2
   email_validator: ^1.0.4
 

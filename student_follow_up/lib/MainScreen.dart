@@ -8,6 +8,8 @@ import 'pages/RemarksPage.dart';
 import 'helpers/AuthService.dart';
 import 'LoginScreen.dart';
 import 'dart:io';
+import 'globals/GRID.dart';
+import 'globals/StaffCredentials.dart';
 
 class MainScreen extends StatefulWidget {
   AuthService appAuth;
@@ -21,7 +23,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   PageController _pageController = PageController(
     initialPage: 0,
-    keepPage: false,
+    keepPage: true,
   );
   int counter = 0;
 
@@ -115,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 CircleAvatar(
-                  radius: 60,
+                  radius: 50,
                   backgroundImage: AssetImage('assets/images/rnw_pic.png'),
                 ),
                 SizedBox(
@@ -123,7 +125,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 Text(
                   "RWn. " + staffCredentials.userName ?? "",
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   staffCredentials.email ?? "",
@@ -133,7 +135,7 @@ class _MainScreenState extends State<MainScreen> {
                   height: 40,
                 ),
                 RaisedButton.icon(
-                  icon: Icon(Icons.arrow_back_ios),
+                  icon: Icon(Icons.power_settings_new),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -153,7 +155,7 @@ class _MainScreenState extends State<MainScreen> {
                   label: Text(
                     "Log Out",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                     ),
                   ),
                 ),

@@ -3,24 +3,10 @@ import 'package:studentfollowup/MainScreen.dart';
 import 'package:studentfollowup/helpers/NetworkHelper.dart';
 import 'helpers/AuthService.dart';
 import 'package:email_validator/email_validator.dart';
+import 'globals/StaffCredentials.dart';
 
 AuthService appAuth = AuthService();
 
-// for globally available data
-class StaffCredentials {
-  String email;
-  String userName;
-
-  static final StaffCredentials _appData = new StaffCredentials._internal();
-
-  factory StaffCredentials() {
-    return _appData;
-  }
-
-  StaffCredentials._internal();
-}
-
-final staffCredentials = StaffCredentials();
 
 class LoginPage extends StatefulWidget {
   @override
@@ -93,11 +79,11 @@ class _LoginPageState extends State<LoginPage> {
         body: ListView(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.all(50),
+              margin: EdgeInsets.all(60),
               child: Column(
                 children: <Widget>[
                   CircleAvatar(
-                    radius: 80,
+                    radius: 65,
                     backgroundImage: AssetImage('assets/images/rnw_pic.png'),
                   ),
                   SizedBox(
@@ -105,10 +91,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Text(
                     "Red and White Group of Institute",
-                    style: TextStyle(fontSize: 20, color: Colors.black87),
+                    style: TextStyle(fontSize: 18, color: Colors.black87),
                   ),
                   SizedBox(
-                    height: 40,
+                    height: 30,
                   ),
                   Form(
                     key: _loginFormKey,
@@ -118,8 +104,9 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _emailController,
                           decoration: InputDecoration(
                             icon: Icon(Icons.email),
+                            contentPadding: EdgeInsets.all(15),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             hintText: "Enter Email",
                           ),
@@ -143,6 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: true,
                           decoration: InputDecoration(
                               icon: Icon(Icons.security),
+                              contentPadding: EdgeInsets.all(15),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
@@ -165,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                           padding: EdgeInsets.all(10),
                           child: Text(
                             "Login",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 18),
                           ),
                           color: Colors.black,
                           textColor: Colors.white,
