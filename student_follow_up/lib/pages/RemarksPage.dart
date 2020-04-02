@@ -1,11 +1,321 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studentfollowup/helpers/PODO.dart';
 import 'MainDataPage.dart';
 import 'package:studentfollowup/helpers/NetworkHelper.dart';
 import 'dart:async';
 import '../globals/GRID.dart';
 import '../globals/StaffCredentials.dart';
 import '../globals/StudentDetails.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+
+Future<List> _futureStudent;
+Future<List> _futureRemarkTypes;
+Future<List> _futureRemarkAddedResponse;
+MainDataPage mdp = MainDataPage();
+int currentIndex = 0;
+
+List<bool> isSelected = [];
+
+List<String> statusItems = ["Low", "Medium", "High"];
+int selectedStatusItem = 0;
+
+final addRemarkForm = GlobalKey<FormState>();
+String remarkField = "";
+
+List rt = [];
+List remarkTypeIntList = [];
+
+void printRemarkDetails(context) {
+  print("============= All Remark Details ===============");
+  print("| GRID => ${grid.number}");
+  print("| Added by => ${staffCredentials.userName}");
+  print("| Remark Type => $isSelected");
+  print("| Status => $selectedStatusItem");
+  print("| Remark => $remarkField");
+  print("==============================");
+  remarkTypeIntList.clear();
+  for(int i=0; i<isSelected.length; i++){
+    if(isSelected[i]==true){
+      remarkTypeIntList.add(i+1);
+    }
+  }
+  _futureRemarkAddedResponse = getRemarkInsertedResponse(grid.number, staffCredentials.userName, remarkTypeIntList.join(","), selectedStatusItem, remarkField);
+  _futureRemarkAddedResponse.then((res){
+    if(res!=null){
+      print("Res => $res");
+      Fluttertoast.showToast(
+          msg: "Remark Added Successfully.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+    else{
+      Fluttertoast.showToast(
+          msg: "Error: Remark not added",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+  });
+}
+
+class RemarkTypeDialogue extends StatefulWidget {
+  @override
+  _RemarkTypeDialogueState createState() => _RemarkTypeDialogueState();
+}
+
+class _RemarkTypeDialogueState extends State<RemarkTypeDialogue> {
+  getFutureRemarkTypes() async {
+    await _futureRemarkTypes.then((v) {
+      setState(() {
+        rt = v;
+        print("rt length => ${rt.length}");
+        if (isSelected.isEmpty) {
+          for (int j = 0; j < rt.length; j++) {
+            isSelected.add(false);
+          }
+        } else {
+          isSelected.clear();
+          for (int j = 0; j < rt.length; j++) {
+            isSelected.add(false);
+          }
+        }
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (_futureRemarkTypes == null) {
+      _futureRemarkTypes = getRemarkTypes();
+    }
+    getFutureRemarkTypes();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Select Remark Type(s)"),
+      content: Container(
+        width: MediaQuery.of(context).size.width,
+        child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: rt.length,
+            itemBuilder: (context, i) {
+              return CheckboxListTile(
+                secondary: Text(rt[i].type_id),
+                selected: isSelected[i],
+                value: isSelected[i],
+                onChanged: (bool val) {
+                  setState(() {
+                    isSelected[i] = !isSelected[i];
+                  });
+                },
+                title: Text(rt[i].type_name),
+              );
+            }),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+              Navigator.pop(context);
+          },
+          child: Text("Select"),
+          color: Colors.teal,
+        ),
+        FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text("Cancle"),
+          color: Colors.blueGrey,
+        )
+      ],
+    );
+  }
+}
+
+class MainRemarkDialogue extends StatefulWidget {
+  @override
+  _MainRemarkDialogueState createState() => _MainRemarkDialogueState();
+}
+
+class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return AlertDialog(
+      title: Text("Add Remark"),
+      content: Container(
+        width: width - (width * 0.1),
+        height: height - (height * 0.7),
+        child: ListView(
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "GRID: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      grid.number.toString(),
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Added By: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      staffCredentials.userName,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Remark Type: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.arrow_drop_down_circle),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            child: RemarkTypeDialogue(),
+                          );
+                        }),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Status: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    DropdownButton(
+                      items: statusItems.map((val) {
+                        return DropdownMenuItem(
+                          value: val,
+                          child: Text(val),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          if (val == "Low") {
+                            selectedStatusItem = 0;
+                          }
+                          if (val == "Medium") {
+                            selectedStatusItem = 1;
+                          }
+                          if (val == "High") {
+                            selectedStatusItem = 2;
+                          }
+                        });
+                      },
+                      value: statusItems[selectedStatusItem],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Remark: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Form(
+                        key: addRemarkForm,
+                        child: TextFormField(
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: "Add your Reamrk...",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          validator: (val) {
+                            if (val == null ||
+                                val == "" ||
+                                val == " " ||
+                                val == ".") {
+                              return "Enter non-empty or valid remark...";
+                            }
+                            return null;
+                          },
+                          onSaved: (val) {
+                            setState(() {
+                              remarkField = val;
+                              print(remarkField);
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+            if (addRemarkForm.currentState.validate()) {
+              addRemarkForm.currentState.save();
+            }
+            printRemarkDetails(context);
+            Navigator.pop(context);
+          },
+          child: Text("Add"),
+          color: Colors.teal,
+        ),
+        FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text("Cancle"),
+          color: Colors.blueGrey,
+        )
+      ],
+    );
+  }
+}
 
 class RemarksPage extends StatefulWidget {
   @override
@@ -13,56 +323,6 @@ class RemarksPage extends StatefulWidget {
 }
 
 class _RemarksPageState extends State<RemarksPage> {
-  Future<List> _futureStudent;
-  Future<List> _futureRemarkTypes;
-  MainDataPage mdp = MainDataPage();
-  int currentIndex = 0;
-
-  List<bool> isSelected = [];
-
-  List<String> statusItems = ["Low", "Medium", "High"];
-  int selectedStatusItem = 0;
-
-  final addRemarkForm = GlobalKey<FormState>();
-  String remarkField = "";
-
-  Widget showRemarkList() {
-    return FutureBuilder(
-      future: _futureRemarkTypes,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var data = snapshot.data;
-          for (int i = 1; i <= data.length; i++) {
-            isSelected.add(false);
-          }
-          return Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: data.length,
-                itemBuilder: (context, i) {
-                  return CheckboxListTile(
-                    secondary: Text(data[i].type_id),
-                    selected: isSelected[i],
-                    value: isSelected[i],
-                    onChanged: (bool val) {
-                      setState(() {
-                        isSelected[i] = !isSelected[i];
-                      });
-                    },
-                    title: Text(data[i].type_name),
-                  );
-                }),
-          );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
-  }
-
   Widget addRemarkButton() {
     return Opacity(
       opacity: 0.7,
@@ -72,185 +332,7 @@ class _RemarksPageState extends State<RemarksPage> {
         onPressed: () {
           showDialog(
             context: context,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              content: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: "GRID: ",
-                              style: TextStyle(
-                                  color: Colors.teal,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                          TextSpan(
-                            text: grid.number.toString(),
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: "Added By: ",
-                              style: TextStyle(
-                                  color: Colors.teal,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                          TextSpan(
-                            text: staffCredentials.userName,
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Remark Type: ",
-                          style: TextStyle(
-                              color: Colors.teal,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            setState(() {
-                              _futureRemarkTypes = getRemarkTypes();
-                            });
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  title: Text("Select Remark Types:"),
-                                  content: showRemarkList(),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      color: Colors.teal,
-                                      child: Text("Select Type(s)"),
-                                      onPressed: () {},
-                                    ),
-                                    FlatButton(
-                                      color: Colors.black87,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text("Cancle"),
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: Icon(Icons.arrow_drop_down_circle),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          "Status: ",
-                          style: TextStyle(
-                              color: Colors.teal,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
-                        ),
-                        DropdownButton(
-                          items: statusItems.map((v) {
-                            return DropdownMenuItem<String>(
-                              child: Text(v),
-                              value: v,
-                            );
-                          }).toList(),
-                          hint: Text("Select any status..."),
-                          onChanged: (val) {
-                            setState(() {
-                              if (val == statusItems[0]) {
-                                selectedStatusItem = 0;
-                              } else if (val == statusItems[1]) {
-                                selectedStatusItem = 1;
-                              } else if (val == statusItems[2]) {
-                                selectedStatusItem = 2;
-                              }
-                            });
-                          },
-                          value: statusItems[selectedStatusItem],
-                        ),
-                      ],
-                    ),
-                    Form(
-                      key: addRemarkForm,
-                        child: TextFormField(
-                          maxLines: 2,
-                          onSaved: (val){
-                            setState(() {
-                              remarkField = val;
-                            });
-                          },
-                          validator: (val){
-                            if(val==null || val.isEmpty || val=="" || val==" " || val=="."){
-                              return "Enter non-empty or valid remark...";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            labelText: "Remark",
-                            labelStyle: TextStyle(
-                              color: Colors.teal,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              title: Text("Add Remark"),
-              actions: <Widget>[
-                FlatButton(
-                  color: Colors.teal,
-                  onPressed: () {
-                    if(addRemarkForm.currentState.validate()){
-                      addRemarkForm.currentState.save();
-                      print(remarkField);
-                    }
-                  },
-                  child: Text("Add Remark"),
-                ),
-                FlatButton(
-                  color: Colors.black87,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Cancle"),
-                )
-              ],
-            ),
+            child: MainRemarkDialogue(),
             barrierDismissible: false,
           );
         },

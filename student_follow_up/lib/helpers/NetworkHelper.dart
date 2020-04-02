@@ -7,6 +7,7 @@ List students = [];
 List loginData = [];
 List remark_type_id = [];
 List remark_type_name = [];
+List remarkAddedResponse = [];
 Response response;
 Dio dio = Dio();
 
@@ -35,7 +36,6 @@ Future<List> getStudent(int number) async {
   }
 }
 
-
 Future<List> getLoggedInResponse(String email, String password) async {
   FormData loginFormData =
       new FormData.fromMap({"email": email, "password": password});
@@ -62,7 +62,7 @@ Future<List> getLoggedInResponse(String email, String password) async {
 
 Future<List> getRemarkTypes() async {
   FormData remarkTypes =
-  new FormData.fromMap({"user_type": staffCredentials.user_type});
+      new FormData.fromMap({"user_type": staffCredentials.user_type});
   response = await dio.post(
       "http://demo.rnwmultimedia.com/eduzila_api/Android_api/remarks_type.php",
       data: remarkTypes);
@@ -71,7 +71,7 @@ Future<List> getRemarkTypes() async {
     if (response.data['data'].isNotEmpty) {
       remark_type_id.clear();
       remark_type_name.clear();
-      for(int i=0; i<response.data['data'].length; i++){
+      for (int i = 0; i < response.data['data'].length; i++) {
         remark_type_id.add(RemarkType.fromJson(response.data['data'][i]));
         remark_type_name.add(RemarkType.fromJson(response.data['data'][i]));
       }
@@ -85,5 +85,29 @@ Future<List> getRemarkTypes() async {
     throw DioError();
   } else {
     throw Exception('Failed to load remark types');
+  }
+}
+
+Future<List> getRemarkInsertedResponse(int gr_id, String added_by,
+    String remark_type, int status, String remark) async {
+
+  FormData remarkData = new FormData.fromMap({
+    "gr_id": gr_id,
+    "added_by": added_by,
+    "type_id": remark_type,
+    "status": status,
+    "remark": remark
+  });
+  response = await dio.post(
+      "http://demo.rnwmultimedia.com/eduzila_api/Android_api/upload_audio_remark.php",
+      data: remarkData);
+
+  if (response.statusCode == 200) {
+    return response.data['data'];
+  } else if (response.statusCode == 503) {
+    print("Server Error bcz of 503");
+    throw DioError();
+  } else {
+    throw Exception('Failed to insert remark');
   }
 }

@@ -29,6 +29,7 @@ dependencies:
   dio: ^3.0.9
   bottom_navy_bar: ^5.3.2
   email_validator: ^1.0.4
+  fluttertoast: ^4.0.1
 
 dev_dependencies:
   flutter_test:
