@@ -95,3 +95,20 @@ class Staff {
     user_name = json['user_name'];
   }
 }
+
+
+
+class RemarkType {
+  String type_id;
+  String type_name;
+
+  RemarkType({
+    this.type_id,
+    this.type_name
+  });
+
+  RemarkType.fromJson(Map<String, dynamic> json) {
+    type_id = json['type_id'];
+    type_name = json['type_name'];
+  }
+}

@@ -3,23 +3,9 @@ import 'package:phone_state_i/phone_state_i.dart';
 import 'MainDataPage.dart';
 import '../helpers/NetworkHelper.dart';
 import 'dart:async';
-import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../globals/GRID.dart';
 
-GetIt locator = GetIt.asNewInstance();
-
-class Call {
-  void call(int num) => launch("tel:$num");
-}
-
-void setupLocator() {
-  locator.registerSingleton(Call());
-}
-
 int number;
-
-Call _service = locator<Call>();
 
 StreamSubscription streamSubscription;
 
@@ -51,19 +37,9 @@ class _HomePageState extends State<HomePage> {
     streamSubscription.cancel();
   }
 
-//  validateAndCall() {
-//    if (_formKey.currentState.validate()) {
-//      _formKey.currentState.save();
-//      print("Number: $number validated...");
-//      // for calling
-//      _service.call(number);
-//    }
-//  }
-
   validateAndGet() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-//      print("Number: $number validated...");
       setState(() {
         GRID g = GRID();
         g.number = number;

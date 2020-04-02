@@ -55,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
             loadingFlag = true;
             staffCredentials.email = res[0].email ?? "";
             staffCredentials.userName = res[0].user_name ?? "";
+            staffCredentials.user_type = res[0].user_type ?? "";
           });
           if (staffCredentials.email != "" && staffCredentials.userName != "") {
             Navigator.of(context).pushReplacement(

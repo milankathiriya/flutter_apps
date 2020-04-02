@@ -1,5 +1,6 @@
 // for globally available data
 class StaffCredentials {
+  int user_type;
   String email;
   String userName;
 

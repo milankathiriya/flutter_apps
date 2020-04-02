@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 import '../globals/StudentDetails.dart';
+import 'package:get_it/get_it.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+GetIt locator = GetIt.asNewInstance();
+
+class Call {
+  void call(int num) => launch("tel:$num");
+}
+
+void setupLocator() {
+  locator.registerSingleton(Call());
+}
+
+Call _service = locator<Call>();
+
+void dialCall(String number) {
+  _service.call(int.parse(number));
+}
 
 class MainDataPage {
   List remarks = [];
@@ -31,6 +49,7 @@ class MainDataPage {
             studentDetails.paid_fees = data.paid_fees;
             studentDetails.remaining_fees = data.remaining_fees;
             studentDetails.remarks = data.remarks;
+            print("f_no.:" + studentDetails.father_mobile);
             return Column(
               children: <Widget>[
                 Container(
@@ -55,7 +74,9 @@ class MainDataPage {
                               maxRadius: 50,
                               backgroundImage:
                                   NetworkImage(studentDetails.image),
-                              child: Text(grid.toString(),),
+                              child: Text(
+                                grid.toString(),
+                              ),
                             ),
 //                          CachedNetworkImage(
 //                            imageUrl: data.image,
@@ -156,7 +177,11 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.call),
                                   title: "Contact",
-                                  data: studentDetails.contact),
+                                  data: studentDetails.contact,
+                                  call: (studentDetails.contact != "")
+                                      ? true
+                                      : false,
+                              ),
                               Divider(
                                 height: 15,
                               ),
@@ -172,7 +197,10 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.call),
                                   title: "Father Contact",
-                                  data: studentDetails.father_mobile),
+                                  data: studentDetails.father_mobile,
+                                  call: (studentDetails.father_mobile != "")
+                                      ? true
+                                      : false),
                               Divider(
                                 height: 15,
                               ),
@@ -372,12 +400,14 @@ class DataField extends StatelessWidget {
     @required this.data,
     @required this.title,
     @required this.color,
+    this.call,
   }) : super(key: key);
 
   final color;
   final icon;
   final title;
   final data;
+  final call;
 
   @override
   Widget build(BuildContext context) {
@@ -392,6 +422,19 @@ class DataField extends StatelessWidget {
         data,
         style: TextStyle(color: Colors.black54, fontSize: 16),
       ),
+      trailing: (call == true)
+          ? FloatingActionButton(
+              backgroundColor: Colors.green,
+              child: Icon(
+                Icons.call,
+              ),
+              onPressed: () {
+                dialCall(data);
+              },
+              mini: true,
+              elevation: 2,
+            )
+          : Text(""),
     );
   }
 }
