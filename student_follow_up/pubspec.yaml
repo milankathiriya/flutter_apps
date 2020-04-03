@@ -30,6 +30,10 @@ dependencies:
   bottom_navy_bar: ^5.3.2
   email_validator: ^1.0.4
   fluttertoast: ^4.0.1
+  font_awesome_flutter: ^8.8.1
+  permission_handler: ^5.0.0+hotfix.3
+  record_mp3: ^1.0.1
+  path_provider: ^1.6.5
 
 dev_dependencies:
   flutter_test:

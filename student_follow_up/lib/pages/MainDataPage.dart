@@ -1,12 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:studentfollowup/globals/StaffCredentials.dart';
 import '../globals/StudentDetails.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image/image.dart' as im;
 
 GetIt locator = GetIt.asNewInstance();
 
 class Call {
   void call(int num) => launch("tel:$num");
+
+  Future whatsApp(int num) {
+    var msg = '''Hello, *RWn. ${studentDetails.fname} ${studentDetails.lname}*
+    \n
+Glad to know that you are a member of *Red and White Group of Institute*
+    \n
+- From *RWn. ${staffCredentials.userName}*''';
+    print("whatsapp://send?phone=91$num&text=$msg");
+    return launch("whatsapp://send?phone=91$num&text=$msg");
+  }
+
+  Future mail(String email) async {
+    var subject = "SFU App";
+    var body = '''Hello, RWn. ${studentDetails.fname} ${studentDetails.lname}
+    \n
+Glad to know that you are a member of Red and White Group of Institute
+    \n
+- From RWn. ${staffCredentials.userName}''';
+    var url = 'mailto:$email?subject=$subject&body=$body';
+    if (await canLaunch(url)) {
+      return await launch(url);
+    } else {
+      Fluttertoast.showToast(
+        msg: "Could not launch $url",
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+      );
+    }
+  }
 }
 
 void setupLocator() {
@@ -17,6 +53,14 @@ Call _service = locator<Call>();
 
 void dialCall(String number) {
   _service.call(int.parse(number));
+}
+
+whatsAppMsg(String number) {
+  _service.whatsApp(int.parse(number));
+}
+
+mailTo(String email) {
+  _service.mail(email);
 }
 
 class MainDataPage {
@@ -166,21 +210,24 @@ class MainDataPage {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               DataField(
-                                  color: deepOrangeAccent,
-                                  icon: Icon(Icons.email),
-                                  title: "Email",
-                                  data: studentDetails.email),
+                                color: deepOrangeAccent,
+                                icon: Icon(Icons.email),
+                                title: "Email",
+                                data: studentDetails.email??"",
+                                email:
+                                    (studentDetails.email != "") ? true : false,
+                              ),
                               Divider(
                                 height: 15,
                               ),
                               DataField(
-                                  color: deepOrangeAccent,
-                                  icon: Icon(Icons.call),
-                                  title: "Contact",
-                                  data: studentDetails.contact,
-                                  call: (studentDetails.contact != "")
-                                      ? true
-                                      : false,
+                                color: deepOrangeAccent,
+                                icon: Icon(Icons.call),
+                                title: "Contact",
+                                data: studentDetails.contact??"",
+                                call: (studentDetails.contact != "")
+                                    ? true
+                                    : false,
                               ),
                               Divider(
                                 height: 15,
@@ -189,7 +236,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.person),
                                   title: "Father Name",
-                                  data: studentDetails.father_name),
+                                  data: studentDetails.father_name??""),
                               Divider(
                                 height: 15,
                               ),
@@ -197,7 +244,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.call),
                                   title: "Father Contact",
-                                  data: studentDetails.father_mobile,
+                                  data: studentDetails.father_mobile??"",
                                   call: (studentDetails.father_mobile != "")
                                       ? true
                                       : false),
@@ -208,7 +255,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.location_on),
                                   title: "Address",
-                                  data: studentDetails.address),
+                                  data: studentDetails.address??""),
                             ],
                           ),
                         ),
@@ -252,38 +299,38 @@ class MainDataPage {
                           color: blueAccent,
                           icon: Icon(Icons.assignment_turned_in),
                           title: "Course Package",
-                          data: studentDetails.course_package),
+                          data: studentDetails.course_package??""),
                       Divider(),
                       DataField(
                           color: blueAccent,
                           icon: Icon(Icons.assignment),
                           title: "Course",
-                          data: studentDetails.course),
+                          data: studentDetails.course??""),
                       Divider(),
                       DataField(
                         color: blueAccent,
                         icon: Icon(Icons.location_city),
                         title: "Branch Name",
-                        data: studentDetails.branch_name,
+                        data: studentDetails.branch_name??"",
                       ),
                       Divider(),
                       DataField(
                           color: blueAccent,
                           icon: Icon(Icons.date_range),
                           title: "Admission Date",
-                          data: studentDetails.admission_date),
+                          data: studentDetails.admission_date??""),
                       Divider(),
                       DataField(
                           color: blueAccent,
                           icon: Icon(Icons.confirmation_number),
                           title: "Admission Code",
-                          data: studentDetails.admission_code),
+                          data: studentDetails.admission_code??""),
                       Divider(),
                       DataField(
                         color: blueAccent,
                         icon: Icon(Icons.outlined_flag),
                         title: "Admission Status",
-                        data: studentDetails.admission_status,
+                        data: studentDetails.admission_status??"",
                       ),
                     ],
                   ),
@@ -320,19 +367,19 @@ class MainDataPage {
                           color: purpleAccent,
                           icon: Icon(Icons.monetization_on),
                           title: "Total Fees",
-                          data: studentDetails.total_fees),
+                          data: studentDetails.total_fees??""),
                       Divider(),
                       DataField(
                           color: purpleAccent,
                           icon: Icon(Icons.attach_money),
                           title: "Paid Fees",
-                          data: studentDetails.paid_fees),
+                          data: studentDetails.paid_fees??""),
                       Divider(),
                       DataField(
                           color: purpleAccent,
                           icon: Icon(Icons.money_off),
                           title: "Remaining Fees",
-                          data: studentDetails.remaining_fees.toString()),
+                          data: studentDetails.remaining_fees.toString()??""),
                     ],
                   ),
                 ),
@@ -401,6 +448,7 @@ class DataField extends StatelessWidget {
     @required this.title,
     @required this.color,
     this.call,
+    this.email,
   }) : super(key: key);
 
   final color;
@@ -408,6 +456,7 @@ class DataField extends StatelessWidget {
   final title;
   final data;
   final call;
+  final email;
 
   @override
   Widget build(BuildContext context) {
@@ -422,19 +471,49 @@ class DataField extends StatelessWidget {
         data,
         style: TextStyle(color: Colors.black54, fontSize: 16),
       ),
-      trailing: (call == true)
-          ? FloatingActionButton(
-              backgroundColor: Colors.green,
-              child: Icon(
-                Icons.call,
-              ),
-              onPressed: () {
-                dialCall(data);
-              },
-              mini: true,
-              elevation: 2,
-            )
-          : Text(""),
+      trailing: Wrap(
+        children: <Widget>[
+          (email == true)
+              ? FloatingActionButton(
+                  backgroundColor: Colors.black54,
+                  child: Icon(
+                    Icons.mail_outline,
+                  ),
+                  onPressed: () {
+                    mailTo(data);
+                  },
+                  mini: true,
+                  elevation: 2,
+                )
+              : Text(""),
+          (call == true)
+              ? FloatingActionButton(
+                  backgroundColor: Colors.green,
+                  child: Icon(
+                    Icons.call,
+                  ),
+                  onPressed: () {
+                    dialCall(data);
+                  },
+                  mini: true,
+                  elevation: 2,
+                )
+              : Text(""),
+          (call == true)
+              ? FloatingActionButton(
+                  backgroundColor: Colors.teal,
+                  child: FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                  ),
+                  onPressed: () {
+                    whatsAppMsg(data);
+                  },
+                  mini: true,
+                  elevation: 2,
+                )
+              : Text("")
+        ],
+      ),
     );
   }
 }

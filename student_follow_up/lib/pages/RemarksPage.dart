@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studentfollowup/helpers/PODO.dart';
 import 'MainDataPage.dart';
 import 'package:studentfollowup/helpers/NetworkHelper.dart';
@@ -8,6 +9,13 @@ import '../globals/GRID.dart';
 import '../globals/StaffCredentials.dart';
 import '../globals/StudentDetails.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record_mp3/record_mp3.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:async';
+import 'dart:io';
+
 
 
 Future<List> _futureStudent;
@@ -27,7 +35,7 @@ String remarkField = "";
 List rt = [];
 List remarkTypeIntList = [];
 
-void printRemarkDetails(context) {
+void sendRemarkDetails(context) {
   print("============= All Remark Details ===============");
   print("| GRID => ${grid.number}");
   print("| Added by => ${staffCredentials.userName}");
@@ -36,14 +44,19 @@ void printRemarkDetails(context) {
   print("| Remark => $remarkField");
   print("==============================");
   remarkTypeIntList.clear();
-  for(int i=0; i<isSelected.length; i++){
-    if(isSelected[i]==true){
-      remarkTypeIntList.add(i+1);
+  for (int i = 0; i < isSelected.length; i++) {
+    if (isSelected[i] == true) {
+      remarkTypeIntList.add(i + 1);
     }
   }
-  _futureRemarkAddedResponse = getRemarkInsertedResponse(grid.number, staffCredentials.userName, remarkTypeIntList.join(","), selectedStatusItem, remarkField);
-  _futureRemarkAddedResponse.then((res){
-    if(res!=null){
+  _futureRemarkAddedResponse = getRemarkInsertedResponse(
+      grid.number,
+      staffCredentials.userName,
+      remarkTypeIntList.join(","),
+      selectedStatusItem,
+      remarkField);
+  _futureRemarkAddedResponse.then((res) {
+    if (res != null) {
       print("Res => $res");
       Fluttertoast.showToast(
           msg: "Remark Added Successfully.",
@@ -52,10 +65,8 @@ void printRemarkDetails(context) {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.blue,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
-    }
-    else{
+          fontSize: 16.0);
+    } else {
       Fluttertoast.showToast(
           msg: "Error: Remark not added",
           toastLength: Toast.LENGTH_LONG,
@@ -63,8 +74,7 @@ void printRemarkDetails(context) {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     }
   });
 }
@@ -129,7 +139,7 @@ class _RemarkTypeDialogueState extends State<RemarkTypeDialogue> {
       actions: <Widget>[
         FlatButton(
           onPressed: () {
-              Navigator.pop(context);
+            Navigator.pop(context);
           },
           child: Text("Select"),
           color: Colors.teal,
@@ -152,6 +162,58 @@ class MainRemarkDialogue extends StatefulWidget {
 }
 
 class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
+
+// START: audio related coding
+
+  String statusText = "";
+  bool isComplete = false;
+
+  Future<bool> checkPermission() async {
+    Map<Permission, PermissionStatus> map = await [Permission.storage, Permission.microphone].request();
+    print(map[Permission.microphone]);
+    return map[Permission.microphone] == PermissionStatus.granted;
+  }
+
+  void startRecord() async {
+    bool hasPermission = await checkPermission();
+    if (hasPermission) {
+      statusText = "Recording...";
+      var recordFilePath = await getFilePath();
+      isComplete = false;
+      RecordMp3.instance.start(recordFilePath, (type) {
+        statusText = "Error--->$type";
+        setState(() {});
+      });
+    } else {
+      statusText = "Permission not available.";
+    }
+    setState(() {});
+  }
+
+  void stopRecord() {
+    bool s = RecordMp3.instance.stop();
+    if (s) {
+      statusText = "Recording Complete.";
+      isComplete = true;
+      setState(() {});
+    }
+  }
+
+  int i=0;
+
+  Future<String> getFilePath() async {
+    Directory storageDirectory = await getExternalStorageDirectory();
+    // create a directory grid wise
+    String sdPath = storageDirectory.path + "/${grid.number}";
+    var d = Directory(sdPath);
+    if (!d.existsSync()) {
+      d.createSync(recursive: true);
+    }
+    var dt = DateTime.now();
+    return sdPath + "/${dt}_${i++}.mp3";
+  }
+// END: audio related coding
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -160,7 +222,7 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
       title: Text("Add Remark"),
       content: Container(
         width: width - (width * 0.1),
-        height: height - (height * 0.7),
+        height: height - (height * 0.55),
         child: ListView(
           children: <Widget>[
             Column(
@@ -288,6 +350,35 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
                     ),
                   ],
                 ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "Audio Remark: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    FlatButton.icon(
+                        icon: FaIcon(FontAwesomeIcons.microphone, color: Colors.red,),
+                        label: Text("Long Press"),
+                        onLongPress: () async {
+                          print("audio...");
+                          startRecord();
+                        },
+                      ),
+                  ],
+                ),
+                Text(statusText),
+                (statusText=="Recording...")?
+                  FlatButton.icon(
+                    icon: FaIcon(FontAwesomeIcons.stop, color: Colors.red,),
+                    label: Text("Stop"),
+                    onPressed: () async {
+                      print("stop...");
+                      stopRecord();
+                    },
+                  ):Text(""),
               ],
             ),
           ],
@@ -299,7 +390,7 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
             if (addRemarkForm.currentState.validate()) {
               addRemarkForm.currentState.save();
             }
-            printRemarkDetails(context);
+            sendRemarkDetails(context);
             Navigator.pop(context);
           },
           child: Text("Add"),

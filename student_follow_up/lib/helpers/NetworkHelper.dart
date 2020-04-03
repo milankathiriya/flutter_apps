@@ -19,7 +19,13 @@ Future<List> getStudent(int number) async {
     response = await dio.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
         data: formData);
-  } catch (e) {
+  }
+  on DioError {
+    response = await dio.post(
+        "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
+        data: formData);
+  }
+  catch (e) {
     response = await dio.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
         data: formData);

@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
         centerTitle: true,
         backgroundColor: Colors.black,
       ),
-      body: allPages(),
+      body: SafeArea(child: allPages(),),
       bottomNavigationBar: BottomNavyBar(
         key: bottomNavyBarKey,
         selectedIndex: counter,
