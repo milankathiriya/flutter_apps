@@ -15,8 +15,7 @@ import 'package:record_mp3/record_mp3.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';
-
-
+import 'package:intl/intl.dart';
 
 Future<List> _futureStudent;
 Future<List> _futureRemarkTypes;
@@ -34,6 +33,9 @@ String remarkField = "";
 
 List rt = [];
 List remarkTypeIntList = [];
+
+var file;
+var audioFile;
 
 void sendRemarkDetails(context) {
   print("============= All Remark Details ===============");
@@ -54,7 +56,8 @@ void sendRemarkDetails(context) {
       staffCredentials.userName,
       remarkTypeIntList.join(","),
       selectedStatusItem,
-      remarkField);
+      remarkField,
+      audioFile);
   _futureRemarkAddedResponse.then((res) {
     if (res != null) {
       print("Res => $res");
@@ -162,14 +165,14 @@ class MainRemarkDialogue extends StatefulWidget {
 }
 
 class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
-
 // START: audio related coding
 
   String statusText = "";
   bool isComplete = false;
 
   Future<bool> checkPermission() async {
-    Map<Permission, PermissionStatus> map = await [Permission.storage, Permission.microphone].request();
+    Map<Permission, PermissionStatus> map =
+        await [Permission.storage, Permission.microphone].request();
     print(map[Permission.microphone]);
     return map[Permission.microphone] == PermissionStatus.granted;
   }
@@ -195,23 +198,35 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
     if (s) {
       statusText = "Recording Complete.";
       isComplete = true;
-      setState(() {});
+      setState(() {
+        audioFile = File(file);
+      });
     }
   }
 
-  int i=0;
+  int i = 0;
+  Directory storageDirectory;
 
   Future<String> getFilePath() async {
-    Directory storageDirectory = await getExternalStorageDirectory();
+    if (Platform.isAndroid) {
+      storageDirectory = await getExternalStorageDirectory();
+    }
+    if (Platform.isIOS) {
+      storageDirectory = await getApplicationDocumentsDirectory();
+      print(storageDirectory);
+    }
     // create a directory grid wise
     String sdPath = storageDirectory.path + "/${grid.number}";
     var d = Directory(sdPath);
     if (!d.existsSync()) {
       d.createSync(recursive: true);
     }
-    var dt = DateTime.now();
-    return sdPath + "/${dt}_${i++}.mp3";
+    var dt = DateFormat("dd-MM-yyyy hh:mm:ss a").format(DateTime.now());
+    print(sdPath + "/${dt}_${i++}.mp3");
+    file = sdPath + "/${dt}_${i++}.mp3";
+    return file;
   }
+
 // END: audio related coding
 
   @override
@@ -360,25 +375,32 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
                           fontWeight: FontWeight.bold),
                     ),
                     FlatButton.icon(
-                        icon: FaIcon(FontAwesomeIcons.microphone, color: Colors.red,),
-                        label: Text("Long Press"),
-                        onLongPress: () async {
-                          print("audio...");
-                          startRecord();
-                        },
+                      icon: FaIcon(
+                        FontAwesomeIcons.microphone,
+                        color: Colors.red,
                       ),
+                      label: Text("Long Press"),
+                      onLongPress: () async {
+                        print("audio...");
+                        startRecord();
+                      },
+                    ),
                   ],
                 ),
                 Text(statusText),
-                (statusText=="Recording...")?
-                  FlatButton.icon(
-                    icon: FaIcon(FontAwesomeIcons.stop, color: Colors.red,),
-                    label: Text("Stop"),
-                    onPressed: () async {
-                      print("stop...");
-                      stopRecord();
-                    },
-                  ):Text(""),
+                (statusText == "Recording...")
+                    ? FlatButton.icon(
+                        icon: FaIcon(
+                          FontAwesomeIcons.stop,
+                          color: Colors.red,
+                        ),
+                        label: Text("Stop"),
+                        onPressed: () async {
+                          print("stop...");
+                          stopRecord();
+                        },
+                      )
+                    : Text(""),
               ],
             ),
           ],

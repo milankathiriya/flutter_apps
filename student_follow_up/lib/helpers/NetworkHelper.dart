@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'PODO.dart';
 import 'package:dio/dio.dart';
 import '../globals/StaffCredentials.dart';
@@ -95,14 +96,17 @@ Future<List> getRemarkTypes() async {
 }
 
 Future<List> getRemarkInsertedResponse(int gr_id, String added_by,
-    String remark_type, int status, String remark) async {
+    String remark_type, int status, String remark, [File file]) async {
+
+  String fileName = file.path.split('/').last;
 
   FormData remarkData = new FormData.fromMap({
     "gr_id": gr_id,
     "added_by": added_by,
     "type_id": remark_type,
     "status": status,
-    "remark": remark
+    "remark": remark,
+    "file": await MultipartFile.fromFile(file.path, filename:fileName) ?? "",
   });
   response = await dio.post(
       "http://demo.rnwmultimedia.com/eduzila_api/Android_api/upload_audio_remark.php",
