@@ -7,7 +7,6 @@ import 'globals/StaffCredentials.dart';
 
 AuthService appAuth = AuthService();
 
-
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LoginPageState();
@@ -71,17 +70,43 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<bool> onBackButtonPressed() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('Are you sure?'),
+            content: new Text('Do you want to exit an App'),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('No'),
+              ),
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: onBackButtonPressed,
+      child: Scaffold(
         appBar: AppBar(
           title: Text('Student Follow Up'),
           centerTitle: true,
         ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(60),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width - 50,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   CircleAvatar(
                     radius: 65,
@@ -170,8 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                         (errorFlag)
                             ? Text(
                                 "Provide valid credentials.",
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.red),
+                                style: TextStyle(fontSize: 16, color: Colors.red),
                               )
                             : Text(""),
                       ],
@@ -180,7 +204,9 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-          ],
+          ),
         ),
-      );
+      ),
+    );
+  }
 }

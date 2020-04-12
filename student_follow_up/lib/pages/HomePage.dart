@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:phone_state_i/phone_state_i.dart';
 import 'MainDataPage.dart';
@@ -101,6 +103,7 @@ class _HomePageState extends State<HomePage> {
                         Flexible(
                           flex: 1,
                           child: FloatingActionButton(
+                            heroTag: null,
                             child: Icon(Icons.cloud_download),
                             onPressed: validateAndGet,
                           ),
@@ -112,7 +115,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          (_futureStudent == null)
+          (_futureStudent == null || grid.number == null)
               ? Expanded(child: Text(""))
               : Expanded(
             child: mdp.getData(number, _futureStudent),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -448,8 +450,7 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
                 toastLength: Toast.LENGTH_LONG,
                 timeInSecForIosWeb: 2,
               );
-            }
-            else{
+            } else {
               sendRemarkDetails(context);
               Navigator.pop(context);
             }
@@ -479,6 +480,7 @@ class _RemarksPageState extends State<RemarksPage> {
     return Opacity(
       opacity: 0.7,
       child: FloatingActionButton(
+        heroTag: null,
         child: Icon(Icons.add),
         backgroundColor: Colors.teal,
         onPressed: () {
@@ -521,7 +523,7 @@ class _RemarksPageState extends State<RemarksPage> {
                 ),
         ],
       ),
-      floatingActionButton: addRemarkButton(),
+      floatingActionButton: (_futureStudent != null) ? addRemarkButton() : null,
     );
   }
 }

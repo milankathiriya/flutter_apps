@@ -5,7 +5,6 @@ import '../globals/StudentDetails.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image/image.dart' as im;
 
 GetIt locator = GetIt.asNewInstance();
 
@@ -268,7 +267,8 @@ class MainDataPage {
             );
           } else if (snapshot.hasError) {
             return Center(
-              child: Text("Low Network Connection...\nTry Again..."),);
+              child: Text("Low Network Connection...\nTry Again..."),
+            );
           }
 
           return Center(child: CircularProgressIndicator());
@@ -396,7 +396,8 @@ class MainDataPage {
             );
           } else if (snapshot.hasError) {
             return Center(
-                child: Text("Low Network Connection...\nTry Again..."),);
+              child: Text("Low Network Connection...\nTry Again..."),
+            );
           }
           return Center(child: CircularProgressIndicator());
         },
@@ -489,6 +490,7 @@ class DataField extends StatelessWidget {
         children: <Widget>[
           (email == true)
               ? FloatingActionButton(
+                  heroTag: null,
                   backgroundColor: Colors.black54,
                   child: Icon(
                     Icons.mail_outline,
@@ -502,6 +504,7 @@ class DataField extends StatelessWidget {
               : Text(""),
           (call == true)
               ? FloatingActionButton(
+                  heroTag: null,
                   backgroundColor: Colors.green,
                   child: Icon(
                     Icons.call,
@@ -515,6 +518,7 @@ class DataField extends StatelessWidget {
               : Text(""),
           (call == true)
               ? FloatingActionButton(
+                  heroTag: null,
                   backgroundColor: Colors.teal,
                   child: FaIcon(
                     FontAwesomeIcons.whatsapp,
