@@ -78,7 +78,11 @@ class MainDataPage {
             studentDetails.fname = data.fname;
             studentDetails.lname = data.lname;
             studentDetails.email = data.email;
+            data.image = data.image.replaceAll(
+                "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php/",
+                "https://demo.rnwmultimedia.com/eduzila_api//");
             studentDetails.image = data.image;
+            print(studentDetails.image);
             studentDetails.contact = data.contact;
             studentDetails.father_name = data.father_name;
             studentDetails.father_mobile = data.father_mobile;
@@ -118,9 +122,6 @@ class MainDataPage {
                               maxRadius: 50,
                               backgroundImage:
                                   NetworkImage(studentDetails.image),
-                              child: Text(
-                                grid.toString(),
-                              ),
                             ),
 //                          CachedNetworkImage(
 //                            imageUrl: data.image,
@@ -213,7 +214,7 @@ class MainDataPage {
                                 color: deepOrangeAccent,
                                 icon: Icon(Icons.email),
                                 title: "Email",
-                                data: studentDetails.email??"",
+                                data: studentDetails.email ?? "",
                                 email:
                                     (studentDetails.email != "") ? true : false,
                               ),
@@ -224,7 +225,7 @@ class MainDataPage {
                                 color: deepOrangeAccent,
                                 icon: Icon(Icons.call),
                                 title: "Contact",
-                                data: studentDetails.contact??"",
+                                data: studentDetails.contact ?? "",
                                 call: (studentDetails.contact != "")
                                     ? true
                                     : false,
@@ -236,7 +237,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.person),
                                   title: "Father Name",
-                                  data: studentDetails.father_name??""),
+                                  data: studentDetails.father_name ?? ""),
                               Divider(
                                 height: 15,
                               ),
@@ -244,7 +245,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.call),
                                   title: "Father Contact",
-                                  data: studentDetails.father_mobile??"",
+                                  data: studentDetails.father_mobile ?? "",
                                   call: (studentDetails.father_mobile != "")
                                       ? true
                                       : false),
@@ -255,7 +256,7 @@ class MainDataPage {
                                   color: deepOrangeAccent,
                                   icon: Icon(Icons.location_on),
                                   title: "Address",
-                                  data: studentDetails.address??""),
+                                  data: studentDetails.address ?? ""),
                             ],
                           ),
                         ),
@@ -266,7 +267,8 @@ class MainDataPage {
               ],
             );
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return Center(
+              child: Text("Low Network Connection...\nTry Again..."),);
           }
 
           return Center(child: CircularProgressIndicator());
@@ -278,122 +280,134 @@ class MainDataPage {
   Widget getCourseData(grid, _futureStudent) {
     Color blueAccent = Colors.blueAccent;
     return SafeArea(
-        child: Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: blueAccent),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: ListView(
+      child: FutureBuilder(
+        future: _futureStudent,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data[0];
+            studentDetails.course_package = data.course_package;
+            studentDetails.course = data.course;
+            studentDetails.admission_date = data.admission_date;
+            studentDetails.admission_code = data.admission_code;
+            studentDetails.admission_status = data.admission_status;
+            studentDetails.branch_name = data.branch_name;
+            studentDetails.total_fees = data.total_fees;
+            studentDetails.paid_fees = data.paid_fees;
+            studentDetails.remaining_fees = data.remaining_fees;
+            return Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      DataField(
-                          color: blueAccent,
-                          icon: Icon(Icons.assignment_turned_in),
-                          title: "Course Package",
-                          data: studentDetails.course_package??""),
-                      Divider(),
-                      DataField(
-                          color: blueAccent,
-                          icon: Icon(Icons.assignment),
-                          title: "Course",
-                          data: studentDetails.course??""),
-                      Divider(),
-                      DataField(
-                        color: blueAccent,
-                        icon: Icon(Icons.location_city),
-                        title: "Branch Name",
-                        data: studentDetails.branch_name??"",
-                      ),
-                      Divider(),
-                      DataField(
-                          color: blueAccent,
-                          icon: Icon(Icons.date_range),
-                          title: "Admission Date",
-                          data: studentDetails.admission_date??""),
-                      Divider(),
-                      DataField(
-                          color: blueAccent,
-                          icon: Icon(Icons.confirmation_number),
-                          title: "Admission Code",
-                          data: studentDetails.admission_code??""),
-                      Divider(),
-                      DataField(
-                        color: blueAccent,
-                        icon: Icon(Icons.outlined_flag),
-                        title: "Admission Status",
-                        data: studentDetails.admission_status??"",
-                      ),
-                    ],
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: blueAccent),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: ListView(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              DataField(
+                                color: blueAccent,
+                                icon: Icon(Icons.assignment_turned_in),
+                                title: "Course Package",
+                                data: studentDetails.course_package ?? "",
+                              ),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                color: blueAccent,
+                                icon: Icon(Icons.assignment),
+                                title: "Course",
+                                data: studentDetails.course ?? "",
+                              ),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: blueAccent,
+                                  icon: Icon(Icons.location_city),
+                                  title: "Branch Name",
+                                  data: studentDetails.branch_name ?? ""),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                color: blueAccent,
+                                icon: Icon(Icons.date_range),
+                                title: "Admission Date",
+                                data: studentDetails.admission_date ?? "",
+                              ),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: blueAccent,
+                                  icon: Icon(Icons.confirmation_number),
+                                  title: "Admission Code",
+                                  data: studentDetails.admission_code ?? ""),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: blueAccent,
+                                  icon: Icon(Icons.assistant_photo),
+                                  title: "Admission Status",
+                                  data: studentDetails.admission_status ?? ""),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: Colors.purpleAccent,
+                                  icon: Icon(Icons.monetization_on),
+                                  title: "Total Fees",
+                                  data: studentDetails.total_fees ?? ""),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: Colors.purpleAccent,
+                                  icon: Icon(Icons.attach_money),
+                                  title: "Paid Fees",
+                                  data: studentDetails.paid_fees ?? ""),
+                              Divider(
+                                height: 15,
+                              ),
+                              DataField(
+                                  color: Colors.purpleAccent,
+                                  icon: Icon(Icons.money_off),
+                                  title: "Remaining Fees",
+                                  data: studentDetails.remaining_fees
+                                          .toString() ??
+                                      ""),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
-      ],
-    ));
-  }
-
-  Widget getFeesData(grid, _futureStudent) {
-    Color purpleAccent = Colors.purpleAccent;
-    return SafeArea(
-        child: Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: purpleAccent),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: ListView(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      DataField(
-                          color: purpleAccent,
-                          icon: Icon(Icons.monetization_on),
-                          title: "Total Fees",
-                          data: studentDetails.total_fees??""),
-                      Divider(),
-                      DataField(
-                          color: purpleAccent,
-                          icon: Icon(Icons.attach_money),
-                          title: "Paid Fees",
-                          data: studentDetails.paid_fees??""),
-                      Divider(),
-                      DataField(
-                          color: purpleAccent,
-                          icon: Icon(Icons.money_off),
-                          title: "Remaining Fees",
-                          data: studentDetails.remaining_fees.toString()??""),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ));
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text("Low Network Connection...\nTry Again..."),);
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
   }
 
   Widget getRemarksData(grid, _futureStudent) {
     Color teal = Colors.teal;
     remarks.clear();
+    remark_by.clear();
     for (int i = 0; i < studentDetails.remarks.length; i++) {
       remarks.add(studentDetails.remarks[i]['remark']);
       remark_by.add(studentDetails.remarks[i]['remark_by']);

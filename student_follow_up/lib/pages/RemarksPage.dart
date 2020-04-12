@@ -27,6 +27,7 @@ List<bool> isSelected = [];
 
 List<String> statusItems = ["Low", "Medium", "High"];
 int selectedStatusItem = 0;
+int radioGroupVal = 0;
 
 final addRemarkForm = GlobalKey<FormState>();
 String remarkField = "";
@@ -42,8 +43,9 @@ void sendRemarkDetails(context) {
   print("| GRID => ${grid.number}");
   print("| Added by => ${staffCredentials.userName}");
   print("| Remark Type => $isSelected");
-  print("| Status => $selectedStatusItem");
+  print("| Status => $radioGroupVal");
   print("| Remark => $remarkField");
+  print("| Audio Remark => $audioFile");
   print("==============================");
   remarkTypeIntList.clear();
   for (int i = 0; i < isSelected.length; i++) {
@@ -55,7 +57,7 @@ void sendRemarkDetails(context) {
       grid.number,
       staffCredentials.userName,
       remarkTypeIntList.join(","),
-      selectedStatusItem,
+      radioGroupVal,
       remarkField,
       audioFile);
   _futureRemarkAddedResponse.then((res) {
@@ -63,7 +65,7 @@ void sendRemarkDetails(context) {
       print("Res => $res");
       Fluttertoast.showToast(
           msg: "Remark Added Successfully.",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.blue,
@@ -237,7 +239,7 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
       title: Text("Add Remark"),
       content: Container(
         width: width - (width * 0.1),
-        height: height - (height * 0.55),
+        height: height - (height * 0.65),
         child: ListView(
           children: <Widget>[
             Column(
@@ -258,21 +260,21 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
                     ),
                   ],
                 ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      "Added By: ",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.teal,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      staffCredentials.userName,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
+//                Row(
+//                  children: <Widget>[
+//                    Text(
+//                      "Added By: ",
+//                      style: TextStyle(
+//                          fontSize: 16,
+//                          color: Colors.teal,
+//                          fontWeight: FontWeight.bold),
+//                    ),
+//                    Text(
+//                      staffCredentials.userName,
+//                      style: TextStyle(fontSize: 14),
+//                    ),
+//                  ],
+//                ),
                 Row(
                   children: <Widget>[
                     Text(
@@ -295,33 +297,58 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
                 Row(
                   children: <Widget>[
                     Text(
-                      "Status: ",
+                      "Priority: ",
                       style: TextStyle(
                           fontSize: 16,
                           color: Colors.teal,
                           fontWeight: FontWeight.bold),
                     ),
-                    DropdownButton(
-                      items: statusItems.map((val) {
-                        return DropdownMenuItem(
-                          value: val,
-                          child: Text(val),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
+                  ],
+                ),
+                // radio buttons for priority
+                Row(
+                  children: <Widget>[
+                    Radio(
+                      value: 0,
+                      groupValue: radioGroupVal,
+                      activeColor: Colors.blue,
+                      onChanged: (v) {
                         setState(() {
-                          if (val == "Low") {
-                            selectedStatusItem = 0;
-                          }
-                          if (val == "Medium") {
-                            selectedStatusItem = 1;
-                          }
-                          if (val == "High") {
-                            selectedStatusItem = 2;
-                          }
+                          radioGroupVal = v;
                         });
                       },
-                      value: statusItems[selectedStatusItem],
+                    ),
+                    Text(
+                      statusItems[0],
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                    Radio(
+                      value: 1,
+                      groupValue: radioGroupVal,
+                      activeColor: Colors.amber,
+                      onChanged: (v) {
+                        setState(() {
+                          radioGroupVal = v;
+                        });
+                      },
+                    ),
+                    Text(
+                      statusItems[1],
+                      style: TextStyle(color: Colors.amber),
+                    ),
+                    Radio(
+                      value: 2,
+                      groupValue: radioGroupVal,
+                      activeColor: Colors.green,
+                      onChanged: (v) {
+                        setState(() {
+                          radioGroupVal = v;
+                        });
+                      },
+                    ),
+                    Text(
+                      statusItems[2],
+                      style: TextStyle(color: Colors.green),
                     ),
                   ],
                 ),
@@ -412,8 +439,20 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
             if (addRemarkForm.currentState.validate()) {
               addRemarkForm.currentState.save();
             }
-            sendRemarkDetails(context);
-            Navigator.pop(context);
+            if (remarkField == "") {
+              Fluttertoast.showToast(
+                msg: "Please write Remark first...",
+                gravity: ToastGravity.BOTTOM,
+                textColor: Colors.white,
+                backgroundColor: Colors.red,
+                toastLength: Toast.LENGTH_LONG,
+                timeInSecForIosWeb: 2,
+              );
+            }
+            else{
+              sendRemarkDetails(context);
+              Navigator.pop(context);
+            }
           },
           child: Text("Add"),
           color: Colors.teal,

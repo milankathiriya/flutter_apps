@@ -41,8 +41,7 @@ class _HomePageState extends State<HomePage> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       setState(() {
-        GRID g = GRID();
-        g.number = number;
+        grid.number = number;
         _futureStudent = getStudent(number);
       });
     }

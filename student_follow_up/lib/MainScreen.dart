@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:studentfollowup/LoginScreen.dart';
+import 'package:studentfollowup/globals/StudentDetails.dart';
 import 'pages/HomePage.dart';
 import 'pages/CoursePage.dart';
-import 'pages/FeesPage.dart';
 import 'pages/RemarksPage.dart';
 import 'helpers/AuthService.dart';
 import 'LoginScreen.dart';
@@ -20,14 +20,17 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   PageController _pageController = PageController(
     initialPage: 0,
     keepPage: true,
   );
   int counter = 0;
+  int totalTabBarView = 1;
 
   final bottomNavyBarKey = GlobalKey();
+
+  TabController tabController;
 
   Widget allPages() {
     return PageView(
@@ -41,8 +44,15 @@ class _MainScreenState extends State<MainScreen> {
       children: <Widget>[
         // all pages indexed by bottom navigation bar's items
         HomePage(),
-        CoursePage(),
-        FeesPage(),
+        (totalTabBarView == null)
+            ? CoursePage()
+            : TabBarView(
+                controller: tabController,
+                children: List.generate(totalTabBarView, (i) {
+                  print("tab i => $i");
+                  return CoursePage(i);
+                }),
+              ),
         RemarksPage(),
       ],
     );
@@ -50,13 +60,32 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      tabController = TabController(
+          length: studentDetails.admissionLength ?? 1, vsync: this);
+      totalTabBarView = studentDetails.admissionLength;
+    });
     return Scaffold(
       appBar: AppBar(
-        title: Text("Student Follow Up"),
+        title: Text("RWn. ${staffCredentials.userName}"),
         centerTitle: true,
         backgroundColor: Colors.black,
+        bottom: (counter == 1 && studentDetails.admissionLength != null)
+            ? TabBar(
+                controller: tabController,
+                tabs: List.generate(studentDetails.admissionLength, (i) {
+                  return Tab(
+                    child: Text("Admission\n       ${i + 1}"),
+                  );
+                }),
+                labelColor: Colors.blue,
+                indicatorColor: Colors.blue,
+              )
+            : null,
       ),
-      body: SafeArea(child: allPages(),),
+      body: SafeArea(
+        child: allPages(),
+      ),
       bottomNavigationBar: BottomNavyBar(
         key: bottomNavyBarKey,
         selectedIndex: counter,
@@ -66,19 +95,17 @@ class _MainScreenState extends State<MainScreen> {
         onItemSelected: (index) {
           setState(() {
             counter = index;
-            if(Platform.isAndroid){
+            if (Platform.isAndroid) {
               _pageController.jumpToPage(
                 counter,
               );
-            }
-            else{
+            } else {
               _pageController.animateToPage(
                 counter,
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInBack,
               );
             }
-
           });
         },
         items: [
@@ -92,12 +119,6 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.info),
             title: Text('Course'),
             activeColor: Colors.blueAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.monetization_on),
-            title: Text('Fees'),
-            activeColor: Colors.purpleAccent,
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(

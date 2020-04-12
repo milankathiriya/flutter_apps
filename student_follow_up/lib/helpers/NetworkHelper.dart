@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:studentfollowup/globals/StudentDetails.dart';
+
 import 'PODO.dart';
 import 'package:dio/dio.dart';
 import '../globals/StaffCredentials.dart';
@@ -12,7 +14,7 @@ List remarkAddedResponse = [];
 Response response;
 Dio dio = Dio();
 
-Future<List> getStudent(int number) async {
+Future<List> getStudent(int number, [int i]) async {
   FormData formData = new FormData.fromMap({
     "gr_id": number,
   });
@@ -20,20 +22,23 @@ Future<List> getStudent(int number) async {
     response = await dio.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
         data: formData);
-  }
-  on DioError {
+  } on DioError {
     response = await dio.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
         data: formData);
-  }
-  catch (e) {
+  } catch (e) {
     response = await dio.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
         data: formData);
   }
   if (response.statusCode == 200) {
     students.clear();
-    students.add(Student.fromJson(response.data['data'][0]));
+    studentDetails.admissionLength = response.data['data'].length;
+
+    print("i => $i");
+    (i == null)
+        ? students.add(Student.fromJson(response.data['data'][0]))
+        : students.add(Student.fromJson(response.data['data'][i]));
     return students;
   } else if (response.statusCode == 503) {
     print("Server Error bcz of 503");
@@ -95,9 +100,9 @@ Future<List> getRemarkTypes() async {
   }
 }
 
-Future<List> getRemarkInsertedResponse(int gr_id, String added_by,
-    String remark_type, int status, String remark, [File file]) async {
-
+Future<List> getRemarkInsertedResponse(
+    int gr_id, String added_by, String remark_type, int status, String remark,
+    [File file]) async {
   String fileName = file.path.split('/').last;
 
   FormData remarkData = new FormData.fromMap({
@@ -106,7 +111,7 @@ Future<List> getRemarkInsertedResponse(int gr_id, String added_by,
     "type_id": remark_type,
     "status": status,
     "remark": remark,
-    "file": await MultipartFile.fromFile(file.path, filename:fileName) ?? "",
+    "file": await MultipartFile.fromFile(file.path, filename: fileName) ?? "",
   });
   response = await dio.post(
       "http://demo.rnwmultimedia.com/eduzila_api/Android_api/upload_audio_remark.php",

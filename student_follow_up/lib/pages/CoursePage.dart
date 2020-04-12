@@ -3,8 +3,14 @@ import 'MainDataPage.dart';
 import 'package:studentfollowup/helpers/NetworkHelper.dart';
 import 'dart:async';
 import '../globals/GRID.dart';
+import '../globals/StudentDetails.dart';
+import '../globals/StaffCredentials.dart';
 
 class CoursePage extends StatefulWidget {
+  int i;
+
+  CoursePage([this.i]);
+
   @override
   _CoursePageState createState() => _CoursePageState();
 }
@@ -22,8 +28,9 @@ class _CoursePageState extends State<CoursePage> {
         _futureStudent = null;
       });
     } else {
+      print("widget.i => ${widget.i}");
       setState(() {
-        _futureStudent = getStudent(grid.number);
+        _futureStudent = getStudent(grid.number, widget.i);
       });
     }
 

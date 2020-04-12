@@ -20,6 +20,8 @@ class StudentDetails {
   List remarks  = [];
   List remark_by = [];
 
+  int admissionLength;
+
   static final StudentDetails _appData = new StudentDetails._internal();
 
   factory StudentDetails() {
