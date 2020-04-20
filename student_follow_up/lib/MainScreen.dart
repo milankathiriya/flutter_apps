@@ -5,11 +5,13 @@ import 'package:studentfollowup/globals/StudentDetails.dart';
 import 'pages/HomePage.dart';
 import 'pages/CoursePage.dart';
 import 'pages/RemarksPage.dart';
+import 'pages/LeadsPage.dart';
 import 'helpers/AuthService.dart';
 import 'LoginScreen.dart';
 import 'dart:io';
 import 'globals/GRID.dart';
 import 'globals/StaffCredentials.dart';
+import 'globals/LeadsInfo.dart';
 
 class MainScreen extends StatefulWidget {
   AuthService appAuth;
@@ -54,32 +56,46 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 }),
               ),
         RemarksPage(),
+        LeadsPage(),
       ],
     );
   }
 
   Future<bool> onBackButtonPressed() async {
     return (await showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit an App'),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: new Text('No'),
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('Are you sure?'),
+            content: new Text('Do you want to exit an App'),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('No'),
+              ),
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Yes'),
+              ),
+            ],
           ),
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: new Text('Yes'),
-          ),
-        ],
-      ),
-    )) ?? false;
+        )) ??
+        false;
   }
 
   @override
   Widget build(BuildContext context) {
+    var leadStatus;
+
+    if (staffCredentials.leadStatus == 1) {
+      setState(() {
+        leadStatus = "Yes";
+      });
+    } else {
+      setState(() {
+        leadStatus = "No";
+      });
+    }
+
     setState(() {
       tabController = TabController(
           length: studentDetails.admissionLength ?? 1, vsync: this);
@@ -130,28 +146,59 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               }
             });
           },
-          items: [
-            BottomNavyBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
-              activeColor: Colors.deepOrange,
-              textAlign: TextAlign.center,
-            ),
-            BottomNavyBarItem(
-              icon: Icon(Icons.info),
-              title: Text('Course'),
-              activeColor: Colors.blueAccent,
-              textAlign: TextAlign.center,
-            ),
-            BottomNavyBarItem(
-              icon: Icon(Icons.message),
-              title: Text(
-                'Remarks',
-              ),
-              activeColor: Colors.teal,
-              textAlign: TextAlign.center,
-            ),
-          ],
+          items: (staffCredentials.leadStatus == 1)
+              ? [
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.home),
+                    title: Text('Home'),
+                    activeColor: Colors.deepOrange,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.info),
+                    title: Text('Course'),
+                    activeColor: Colors.blueAccent,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.message),
+                    title: Text(
+                      'Remarks',
+                    ),
+                    activeColor: Colors.teal,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.score),
+                    title: Text(
+                      'Leads (${leadsInfo.oldLeadsLength??" - "})',
+                    ),
+                    activeColor: Colors.purple,
+                    textAlign: TextAlign.center,
+                  ),
+                ]
+              : [
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.home),
+                    title: Text('Home'),
+                    activeColor: Colors.deepOrange,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.info),
+                    title: Text('Course'),
+                    activeColor: Colors.blueAccent,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.message),
+                    title: Text(
+                      'Remarks',
+                    ),
+                    activeColor: Colors.teal,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
         ),
         drawer: Drawer(
           child: SafeArea(
@@ -173,6 +220,19 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   Text(
                     staffCredentials.email ?? "",
                     style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Lead Permission: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      Text(leadStatus ?? "-"),
+                    ],
                   ),
                   SizedBox(
                     height: 40,

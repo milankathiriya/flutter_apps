@@ -3,6 +3,7 @@ class StaffCredentials {
   int user_type;
   String email;
   String userName;
+  int leadStatus;
 
   static final StaffCredentials _appData = new StaffCredentials._internal();
 

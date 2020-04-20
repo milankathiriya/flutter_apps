@@ -65,6 +65,7 @@ void sendRemarkDetails(context) {
   _futureRemarkAddedResponse.then((res) {
     if (res != null) {
       print("Res => $res");
+      audioFile = null;
       Fluttertoast.showToast(
           msg: "Remark Added Successfully.",
           toastLength: Toast.LENGTH_LONG,
@@ -83,6 +84,16 @@ void sendRemarkDetails(context) {
           textColor: Colors.white,
           fontSize: 16.0);
     }
+  }).catchError((err){
+    print("ERROR: $err");
+    Fluttertoast.showToast(
+        msg: "Error: Remark not added",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   });
 }
 
@@ -127,6 +138,7 @@ class _RemarkTypeDialogueState extends State<RemarkTypeDialogue> {
       content: Container(
         width: MediaQuery.of(context).size.width,
         child: ListView.builder(
+            physics: BouncingScrollPhysics(),
             shrinkWrap: true,
             itemCount: rt.length,
             itemBuilder: (context, i) {
@@ -243,6 +255,7 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
         width: width - (width * 0.1),
         height: height - (height * 0.65),
         child: ListView(
+          physics: BouncingScrollPhysics(),
           children: <Widget>[
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -441,9 +454,9 @@ class _MainRemarkDialogueState extends State<MainRemarkDialogue> {
             if (addRemarkForm.currentState.validate()) {
               addRemarkForm.currentState.save();
             }
-            if (remarkField == "") {
+            if (remarkField == "" || audioFile == "" || audioFile == null) {
               Fluttertoast.showToast(
-                msg: "Please write Remark first...",
+                msg: "Please fill up all fields...",
                 gravity: ToastGravity.BOTTOM,
                 textColor: Colors.white,
                 backgroundColor: Colors.red,

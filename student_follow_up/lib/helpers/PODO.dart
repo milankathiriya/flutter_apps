@@ -52,12 +52,13 @@ class Student {
     father_name = json['father_name'];
     father_mobile = json['father_mobile'];
     address = json['address'];
-    course_package = (json['course_package']=="")?"-":json['course_package'];
+    course_package =
+        (json['course_package'] == "") ? "-" : json['course_package'];
     course = json['course'];
 
     courses = course.split(",");
     course = "";
-    courses.forEach((c){
+    courses.forEach((c) {
       course += "- " + c + "\n";
     });
 
@@ -73,42 +74,72 @@ class Student {
   }
 }
 
-
 class Staff {
   int user_type;
   String email;
   String password;
   String user_name;
 
-
-  Staff({
-    this.user_type,
-    this.email,
-    this.password,
-    this.user_name
-  });
+  Staff({this.user_type, this.email, this.password, this.user_name});
 
   Staff.fromJson(Map<String, dynamic> json) {
     user_type = json['user_type'];
-    email     = json['email'];
-    password  = json['password'];
+    email = json['email'];
+    password = json['password'];
     user_name = json['user_name'];
   }
 }
-
-
 
 class RemarkType {
   String type_id;
   String type_name;
 
-  RemarkType({
-    this.type_id,
-    this.type_name
-  });
+  RemarkType({this.type_id, this.type_name});
 
   RemarkType.fromJson(Map<String, dynamic> json) {
     type_id = json['type_id'];
     type_name = json['type_name'];
+  }
+}
+
+class Leads {
+  String lead_id;
+  String lead_timestamp_date;
+  String lead_timestamp_time;
+  String lead_school_classes;
+  String lead_student_name;
+  String lead_interested_subject;
+  String lead_assign_date;
+  String lead_followup_status;
+
+  List interested_subjects = [];
+
+  Leads(
+      {this.lead_id,
+      this.lead_timestamp_date,
+      this.lead_timestamp_time,
+      this.lead_school_classes,
+      this.lead_student_name,
+      this.lead_interested_subject,
+      this.lead_assign_date,
+      this.lead_followup_status});
+
+  Leads.fromJson(Map<String, dynamic> json) {
+    lead_id = json['id'].toString();
+    lead_timestamp_date = json['timestamp'];
+    lead_timestamp_time = json['timestamp'];
+    lead_school_classes = json['name_of_school_or_classes'];
+    lead_student_name = json['student_name'];
+
+    lead_interested_subject = json['Intrested_subjects'];
+
+    interested_subjects = lead_interested_subject.split(",");
+    lead_interested_subject = "";
+    interested_subjects.forEach((c) {
+      lead_interested_subject += c + ", ";
+    });
+
+    lead_assign_date = json['lead_assign_date'];
+    lead_followup_status = json['followup_status'].toString();
   }
 }

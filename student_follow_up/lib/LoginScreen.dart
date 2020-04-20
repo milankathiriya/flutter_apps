@@ -38,12 +38,12 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  validAndLogin() {
+  validAndLogin() async {
     if (_loginFormKey.currentState.validate()) {
       _loginFormKey.currentState.save();
       _futureStaff = getLoggedInResponse(email, password) ?? "";
 
-      _futureStaff.then((res) {
+      _futureStaff.then((res) async {
         if (res == null) {
           setState(() {
             errorFlag = true;
@@ -55,6 +55,10 @@ class _LoginPageState extends State<LoginPage> {
             staffCredentials.email = res[0].email ?? "";
             staffCredentials.userName = res[0].user_name ?? "";
             staffCredentials.user_type = res[0].user_type ?? "";
+          });
+          var leadPermissionStatusNumber = await getLeadPermissionResponse(staffCredentials.userName);
+          setState(() {
+            staffCredentials.leadStatus = leadPermissionStatusNumber as int;
           });
           if (staffCredentials.email != "" && staffCredentials.userName != "") {
             Navigator.of(context).pushReplacement(

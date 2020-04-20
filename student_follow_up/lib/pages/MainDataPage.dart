@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:studentfollowup/globals/LeadsInfo.dart';
 import 'package:studentfollowup/globals/StaffCredentials.dart';
 import '../globals/StudentDetails.dart';
 import 'package:get_it/get_it.dart';
@@ -65,6 +66,7 @@ mailTo(String email) {
 class MainDataPage {
   List remarks = [];
   List remark_by = [];
+  List leads = [];
 
   Widget getData(grid, _futureStudent) {
     Color deepOrangeAccent = Colors.deepOrangeAccent;
@@ -74,6 +76,7 @@ class MainDataPage {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var data = snapshot.data[0];
+            print("DATA: $data");
             studentDetails.fname = data.fname;
             studentDetails.lname = data.lname;
             studentDetails.email = data.email;
@@ -203,6 +206,7 @@ class MainDataPage {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: ListView(
+                      physics: BouncingScrollPhysics(),
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.all(1.0),
@@ -265,7 +269,8 @@ class MainDataPage {
                 ),
               ],
             );
-          } else if (snapshot.hasError) {
+          }
+          else if (snapshot.hasError) {
             return Center(
               child: Text("Low Network Connection...\nTry Again..."),
             );
@@ -305,6 +310,7 @@ class MainDataPage {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: ListView(
+                      physics: BouncingScrollPhysics(),
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.all(1.0),
@@ -425,6 +431,7 @@ class MainDataPage {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: ListView.separated(
+                physics: BouncingScrollPhysics(),
                 separatorBuilder: (context, i) {
                   return Divider(
                     color: Colors.teal,
@@ -450,6 +457,119 @@ class MainDataPage {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget getLeadsData(grid, _futureStudent) {
+    Color purple = Colors.purple;
+    leads.clear();
+    for (int i = 0; i < leadsInfo.oldLeadsLength; i++) {
+      leads.add(leadsInfo.lead_interested_subjects);
+    }
+    return SafeArea(
+      child: FutureBuilder(
+        future: _futureStudent,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data;
+            print("LEADS DATA: $data");
+            return Column(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: purple),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: leadsInfo.oldLeadsLength,
+                      itemBuilder: (context, i) {
+                        return Card(
+                          elevation: 3,
+                          borderOnForeground: true,
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  color: purple,
+                                  padding: EdgeInsets.all(10),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        "(${i+1}) Assign Date: ",
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                      Text(
+                                        data[i].lead_assign_date,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "Student Name: ",
+                                      style: TextStyle(
+                                          fontSize: 16, color: purple),
+                                    ),
+                                    Text(data[i].lead_student_name),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "School/Classes: ",
+                                      style: TextStyle(
+                                          fontSize: 16, color: purple),
+                                    ),
+                                    Text(data[i].lead_school_classes),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "Interested Subject: ",
+                                      style: TextStyle(
+                                          fontSize: 16, color: purple),
+                                    ),
+                                    Text(data[i].lead_interested_subject),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text("Low Network Connection...\nTry Again..."),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }

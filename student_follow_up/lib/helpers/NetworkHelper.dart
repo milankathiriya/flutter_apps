@@ -5,6 +5,7 @@ import 'package:studentfollowup/globals/StudentDetails.dart';
 import 'PODO.dart';
 import 'package:dio/dio.dart';
 import '../globals/StaffCredentials.dart';
+import '../globals/LeadsInfo.dart';
 
 List students = [];
 List loginData = [];
@@ -12,6 +13,9 @@ List remark_type_id = [];
 List remark_type_name = [];
 List remarkAddedResponse = [];
 Response response;
+Response oldLeadResponse;
+Response newLeadResponse;
+List leads = [];
 Dio dio = Dio();
 
 Future<List> getStudent(int number, [int i]) async {
@@ -69,6 +73,65 @@ Future<List> getLoggedInResponse(String email, String password) async {
     throw DioError();
   } else {
     throw Exception('Failed to load data');
+  }
+}
+
+Future getLeadPermissionResponse(String user_name) async {
+  FormData leadPermissionFormData =
+      new FormData.fromMap({"user_name": user_name});
+  response = await dio.post(
+      "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Lead_check_permission.php",
+      data: leadPermissionFormData);
+
+  if (response.statusCode == 200) {
+    if (response.data != null) {
+      var res = response.data['status'];
+      print(res.runtimeType);
+      return res;
+    } else {
+      print("data is empty");
+      return null;
+    }
+  } else if (response.statusCode == 503) {
+    print("Server Error bcz of 503");
+    throw DioError();
+  } else {
+    throw Exception('Failed to fetch data');
+  }
+}
+
+Future getLeads(String user_name) async {
+  FormData oldLeadFormData =
+  new FormData.fromMap({"lead_type": 0, "user_name": user_name});
+  oldLeadResponse = await dio.post(
+      "http://demo.rnwmultimedia.com/Lead Calling_report/get_lead_list.php",
+      data: oldLeadFormData);
+
+//  FormData newLeadFormData =
+//  new FormData.fromMap({"lead_type": 1, "user_name": user_name});
+//  newLeadResponse = await dio.post(
+//      "http://demo.rnwmultimedia.com/Lead Calling_report/get_lead_list.php",
+//      data: newLeadFormData);
+
+  if (oldLeadResponse.statusCode == 200) {
+    if (oldLeadResponse.data != null) {
+      leads.clear();
+      var oldRes = oldLeadResponse.data['data'];
+      print(oldRes[0]);
+      leadsInfo.oldLeadsLength = oldRes.length;
+      for(int i=0; i<oldRes.length; i++){
+        leads.add(Leads.fromJson(oldRes[i]));
+      }
+      return leads;
+    } else {
+      print("data is empty");
+      return null;
+    }
+  } else if (oldLeadResponse.statusCode == 503) {
+    print("Server Error bcz of 503");
+    throw DioError();
+  } else {
+    throw Exception('Failed to fetch data');
   }
 }
 
