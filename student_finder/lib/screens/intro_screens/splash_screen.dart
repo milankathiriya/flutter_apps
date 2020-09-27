@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_finder/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key key}) : super(key: key);
@@ -15,17 +16,22 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     checkPrefs();
-    // Timer(Duration(milliseconds: 2000), () {
-    //   Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-    // });
   }
 
   checkPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Timer(Duration(milliseconds: 2000), () {
-      if (prefs.containsKey('email')) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/home', (route) => false);
+    Timer(Duration(milliseconds: 2000), () async {
+      if (prefs.containsKey('email') && prefs.containsKey('pass')) {
+        String e = prefs.getString('email');
+        String p = prefs.getString('pass');
+        var ans = await authService.getLoggedInResponse(e, p);
+        if (ans != null && ans.userEmail.isNotEmpty) {
+          print("success login...");
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home', (route) => false);
+        } else {
+          print("login failed...");
+        }
       } else {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/login', (route) => false);

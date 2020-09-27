@@ -159,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('email', email);
         prefs.setString('uname', ans.userName);
+        prefs.setString('pass', password);
         setState(() {
           _isLoading = true;
           _isLoginFailed = false;
