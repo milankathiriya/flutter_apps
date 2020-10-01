@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_finder/components/side_drawer.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:student_finder/models/StudentModel.dart';
+import 'package:student_finder/screens/main_screens/bottom_components/admission_page.dart';
 import 'package:student_finder/screens/main_screens/bottom_components/general_info_page.dart';
+import 'package:student_finder/screens/main_screens/bottom_components/remarks_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -56,14 +60,8 @@ class _HomePageState extends State<HomePage> {
           },
           children: [
             GeneralInfoPage(),
-            Container(
-              // TODO: AdmissionPage widget
-              color: Colors.blue,
-            ),
-            Container(
-              // TODO: RemarksPage widget
-              color: Colors.teal,
-            ),
+            AdmissionPage(),
+            RemarksPage(),
           ],
         ),
       ),

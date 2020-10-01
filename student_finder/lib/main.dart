@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:student_finder/models/StudentModel.dart';
 import 'package:student_finder/screens/intro_screens/login_screen.dart';
 import 'package:student_finder/screens/intro_screens/splash_screen.dart';
 import 'package:student_finder/screens/main_screens/home_screen.dart';
-
 
 /*
 Red :- #e31e25
@@ -16,15 +17,15 @@ Black  :- #2b2a28
 void main() {
   runApp(
     MaterialApp(
-      theme: ThemeData(
-        primaryColor: Color(0xff0b527e),
-        accentColor: Color(0xffe31e25),
-      ),
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/login': (context) => LoginPage(),
-        '/home': (context) => HomePage(),
-      }
-    ),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Color(0xff2b2a28),
+          accentColor: Color(0xffe31e25),
+        ),
+        routes: {
+          '/': (context) => SplashScreen(),
+          '/login': (context) => LoginPage(),
+          '/home': (context) => HomePage(),
+        }),
   );
 }

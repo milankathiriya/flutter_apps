@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:student_finder/globals/student.dart';
 import 'package:student_finder/models/LoginModel.dart';
 import 'package:student_finder/models/StudentModel.dart';
 
@@ -36,11 +37,12 @@ class AuthService {
 
     if (res.statusCode == 200) {
       if (res.body.isNotEmpty) {
-        var data = jsonDecode(res.body.toString());
-        // print(data['data'][0]);
-        // print(data['data'][1]);
+        Map data = jsonDecode(res.body.toString());
+        studentGlobal.totalAdmissions = data['data'].length;
         return data['data']
-            .map<StudentModel>((e) => StudentModel.fromJson(e))
+            .map<StudentModel>(
+              (e) => StudentModel.fromJson(e),
+            )
             .toList();
       } else {
         print("Data is empty.");
