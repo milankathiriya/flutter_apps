@@ -50,6 +50,8 @@ class _AdmissionPageState extends State<AdmissionPage> {
 
   Widget CustomPageView(int i) {
     return ListView(
+      physics: BouncingScrollPhysics(),
+
       children: [
         ListTile(
           leading: Icon(Icons.assignment_turned_in),

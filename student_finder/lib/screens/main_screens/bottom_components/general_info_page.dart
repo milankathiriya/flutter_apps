@@ -1,7 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:student_finder/globals/student.dart';
 import 'package:student_finder/services/auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:intent/intent.dart' as android_intent;
+import 'package:intent/extra.dart' as android_extra;
+import 'package:intent/typedExtra.dart' as android_typedExtra;
+import 'package:intent/action.dart' as android_action;
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class GeneralInfoPage extends StatefulWidget {
   GeneralInfoPage({Key key}) : super(key: key);
@@ -19,14 +29,13 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
-    double _height = MediaQuery.of(context).size.height;
-
-    return ListView(
-      children: [
-        gridForm(),
-        getStudentData(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          gridForm(),
+          getStudentData(),
+        ],
+      ),
     );
   }
 
@@ -57,6 +66,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                     _grid = int.parse(val);
                   });
                 },
+                onFieldSubmitted: (val) => validateGRIDAndFetchData(),
                 decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
@@ -121,6 +131,22 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                 if (ss.data != null) {
                   var data = ss.data;
                   studentGlobal.grid = _grid.toString();
+                  studentGlobal.fname =
+                      data.first.fname != "" ? data.first.fname : "-";
+                  studentGlobal.lname =
+                      data.first.lname != "" ? data.first.lname : "-";
+                  studentGlobal.email =
+                      data.first.email != "" ? data.first.email : "-";
+                  studentGlobal.mobile =
+                      data.first.mobile != "" ? data.first.mobile : "-";
+                  studentGlobal.father_name = data.first.father_name != ""
+                      ? data.first.father_name
+                      : "-";
+                  studentGlobal.father_mobile = data.first.father_mobile != ""
+                      ? data.first.father_mobile
+                      : "-";
+                  studentGlobal.address =
+                      data.first.address != "" ? data.first.address : "-";
                   int l = studentGlobal.totalAdmissions;
                   clearAllLists();
                   for (int i = 0; i < l; i++) {
@@ -169,52 +195,47 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            SizedBox(
+                              width: _width * 0.01,
+                            ),
                             CircleAvatar(
-                              radius: 60,
-                              // FIXME: if image not found then 404 occurs
-                              backgroundImage: NetworkImage(
-                                "http://demo.rnwmultimedia.com/eduzila_api${data.first.image}",
-                              ),
+                              radius: _height * 0.07,
+                              backgroundImage: _fetchImage(data.first.image),
                             ),
                             VerticalDivider(
                               indent: 10,
                               endIndent: 10,
+                              color: Colors.grey,
                             ),
-                            SizedBox(width: 15),
                             Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "\bGRID: ",
-                                      textAlign: TextAlign.left,
+                                RichText(
+                                  text: TextSpan(
+                                      text: "GRID: ",
                                       style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
+                                        color: Colors.redAccent,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                    ),
-                                    Text(
-                                      studentGlobal.grid,
-                                      // _grid.toString(),
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 18,
+                                      children: [
+                                        TextSpan(
+                                          text: studentGlobal.grid,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ]),
                                 ),
                                 RichText(
                                   text: TextSpan(
-                                      text: "Name: \n",
+                                      text: "Name: ",
                                       style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
+                                        color: Colors.redAccent,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       children: [
@@ -223,11 +244,41 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                                               "${data.first.fname} ${data.first.lname}",
                                           style: TextStyle(
                                             color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ]),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Total Admissions: ",
+                                      style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: 30,
+                                      height: 23,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        studentGlobal.totalAdmissions
+                                            .toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -245,24 +296,26 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                         ),
                         margin: EdgeInsets.only(left: 8, right: 8, top: 8),
                         child: ListView(
+                          physics: BouncingScrollPhysics(),
                           children: [
                             CustomListTile(
-                              // TODO: Set email functionality via icon
                               title: "Email",
-                              data: data.first.email,
+                              data: studentGlobal.email,
                               icon: Icons.email,
+                              canEmail: true,
                             ),
                             Divider(
                               indent: 15,
                               endIndent: 15,
                             ),
                             CustomListTile(
-                              // TODO: Set call functionality via icon
-                              // TODO: Set whatsapp functionality via icon
-
                               title: "Contact",
-                              data: data.first.mobile,
+                              data: studentGlobal.mobile,
                               icon: Icons.call,
+                              canCallStudent:
+                                  studentGlobal.mobile != "-" ? true : false,
+                              canWhatsAppStudent:
+                                  studentGlobal.mobile != "-" ? true : false,
                             ),
                             Divider(
                               indent: 15,
@@ -270,7 +323,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                             ),
                             CustomListTile(
                               title: "Father Name",
-                              data: data.first.father_name,
+                              data: studentGlobal.father_name,
                               icon: Icons.account_circle,
                             ),
                             Divider(
@@ -278,12 +331,16 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                               endIndent: 15,
                             ),
                             CustomListTile(
-                              // TODO: Set call functionality via icon
-                              // TODO: Set whatsapp functionality via icon
-
                               title: "Father Contact",
-                              data: data.first.father_mobile,
+                              data: studentGlobal.father_mobile,
                               icon: Icons.call,
+                              canCallFather: studentGlobal.father_mobile != "-"
+                                  ? true
+                                  : false,
+                              canWhatsAppFather:
+                                  studentGlobal.father_mobile != "-"
+                                      ? true
+                                      : false,
                             ),
                             Divider(
                               indent: 15,
@@ -291,7 +348,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                             ),
                             CustomListTile(
                               title: "Address",
-                              data: data.first.address,
+                              data: studentGlobal.address,
                               icon: Icons.location_on,
                             ),
                           ],
@@ -309,6 +366,15 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
             })
         : Container();
   }
+
+  _fetchImage(image) {
+    if (image == "/Eduzilla_image/rnw.jpg") {
+      return NetworkImage(
+          "https://adviceco.com.au/wp-content/uploads/sites/683/2019/10/profile-icon-male-user-person-avatar-symbol-vector-20910833.png");
+    } else {
+      return NetworkImage("http://demo.rnwmultimedia.com/eduzila_api$image");
+    }
+  }
 }
 
 class CustomListTile extends StatelessWidget {
@@ -317,11 +383,21 @@ class CustomListTile extends StatelessWidget {
     this.title,
     this.data,
     this.icon,
+    this.canEmail = false,
+    this.canCallStudent = false,
+    this.canCallFather = false,
+    this.canWhatsAppStudent = false,
+    this.canWhatsAppFather = false,
   }) : super(key: key);
 
   final title;
   final data;
   final icon;
+  final canEmail;
+  final canCallStudent;
+  final canCallFather;
+  final canWhatsAppStudent;
+  final canWhatsAppFather;
 
   @override
   Widget build(BuildContext context) {
@@ -340,6 +416,101 @@ class CustomListTile extends StatelessWidget {
           fontSize: 16,
         ),
       ),
+      trailing: Wrap(
+        children: [
+          (canEmail)
+              ? FloatingActionButton(
+                  child: Icon(
+                    Icons.email,
+                  ),
+                  backgroundColor: Colors.blueGrey,
+                  mini: true,
+                  tooltip: "Email",
+                  onPressed: _sendEmail,
+                )
+              : Text(""),
+          (canCallStudent)
+              ? FloatingActionButton(
+                  child: Icon(
+                    Icons.phone,
+                  ),
+                  backgroundColor: Colors.blueAccent,
+                  mini: true,
+                  tooltip: "Call Student",
+                  onPressed: () => _callContact(studentGlobal.mobile),
+                )
+              : Text(""),
+          (canCallFather)
+              ? FloatingActionButton(
+                  child: Icon(
+                    Icons.phone,
+                  ),
+                  backgroundColor: Colors.blueAccent,
+                  mini: true,
+                  tooltip: "Call Father",
+                  onPressed: () => _callContact(studentGlobal.father_mobile),
+                )
+              : Text(""),
+          (canWhatsAppStudent)
+              ? FloatingActionButton(
+                  child: FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                  ),
+                  backgroundColor: Colors.green,
+                  mini: true,
+                  tooltip: "WhatsApp Student",
+                  onPressed: () => _whatsApp(studentGlobal.mobile),
+                )
+              : Text(""),
+          (canWhatsAppFather)
+              ? FloatingActionButton(
+                  child: FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                  ),
+                  backgroundColor: Colors.green,
+                  mini: true,
+                  tooltip: "WhatsApp Father",
+                  onPressed: () => _whatsApp(studentGlobal.father_mobile),
+                )
+              : Text(""),
+        ],
+      ),
     );
+  }
+
+  _sendEmail() async {
+    var fname = Uri.encodeComponent(studentGlobal.fname);
+    var lname = Uri.encodeComponent(studentGlobal.lname);
+    // TODO: show multiple template emails for sending
+    final Uri params = Uri(
+        scheme: 'mailto',
+        path: studentGlobal.email,
+        queryParameters: {
+          'subject': "From RNW",
+          'body': "Hello ${fname + " " + lname}"
+        });
+    String url = params.toString().replaceAll("+", "%20").replaceAll("%2520", "%20");
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
+  }
+
+  _callContact(String mobile) async {
+    bool res = await FlutterPhoneDirectCaller.callNumber(mobile);
+    print(res);
+  }
+
+  _whatsApp(String mobile) async {
+    // TODO: make student and father separate msgs with multiple template msgs
+    String msg =
+        "Hello ${studentGlobal.fname} ${studentGlobal.lname}, \n - From RNW";
+    String url = "https://api.whatsapp.com/send?phone=+91$mobile&text=$msg";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
   }
 }

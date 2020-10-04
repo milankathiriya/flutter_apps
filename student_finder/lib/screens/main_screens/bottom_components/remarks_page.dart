@@ -27,6 +27,7 @@ class _RemarksPageState extends State<RemarksPage> {
               ),
             ),
             child: ListView.separated(
+                physics: BouncingScrollPhysics(),
                 itemCount: a.length,
                 separatorBuilder: (_, __) {
                   return Divider(
@@ -35,7 +36,16 @@ class _RemarksPageState extends State<RemarksPage> {
                   );
                 },
                 itemBuilder: (_, i) {
+                  if (a.length == 1) {
+                    return Center(
+                        child: Text(
+                          "No any Remarks...",
+                          style: TextStyle(color: Colors.teal, fontSize: 18),
+                        ),
+                    );
+                  }
                   return ListTile(
+
                     leading: Text(
                       "${i + 1}",
                       style: TextStyle(color: Colors.teal, fontSize: 16),

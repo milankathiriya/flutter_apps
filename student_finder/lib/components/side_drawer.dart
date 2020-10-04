@@ -9,13 +9,13 @@ class SideDrawer extends StatefulWidget {
 }
 
 class _SideDrawerState extends State<SideDrawer> {
-  String email;
-  String uname;
+  String email = "";
+  String uname = "";
 
   @override
   void initState() {
     super.initState();
-    if (email == null || uname == null) {
+    if (email == "" || uname == "") {
       checkPrefs();
     }
   }
