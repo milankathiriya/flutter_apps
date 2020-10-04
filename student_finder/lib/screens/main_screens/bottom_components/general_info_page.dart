@@ -1,16 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:student_finder/globals/student.dart';
 import 'package:student_finder/services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intent/intent.dart' as android_intent;
-import 'package:intent/extra.dart' as android_extra;
-import 'package:intent/typedExtra.dart' as android_typedExtra;
-import 'package:intent/action.dart' as android_action;
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class GeneralInfoPage extends StatefulWidget {
@@ -23,9 +16,13 @@ class GeneralInfoPage extends StatefulWidget {
 class _GeneralInfoPageState extends State<GeneralInfoPage> {
   final _studentFindingFormKey = GlobalKey<FormState>();
   TextEditingController _gridController = TextEditingController();
-  int _grid;
-  bool _autovalidate = false;
   var fetchedData;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +48,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
               flex: 4,
               child: TextFormField(
                 controller: _gridController,
-                autovalidate: _autovalidate,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.number,
                 validator: (val) {
                   if (val.isEmpty || val == null || val == "") {
@@ -63,7 +60,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
                 },
                 onSaved: (val) {
                   setState(() {
-                    _grid = int.parse(val);
+                    studentGlobal.grid = val;
                   });
                 },
                 onFieldSubmitted: (val) => validateGRIDAndFetchData(),
@@ -96,15 +93,11 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
   }
 
   validateGRIDAndFetchData() async {
+    studentGlobal.alreadyLoaded = false;
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     if (_studentFindingFormKey.currentState.validate()) {
       _studentFindingFormKey.currentState.save();
-
-      fetchedData = await authService.getStudentData(grid: _grid);
-    } else {
-      setState(() {
-        _autovalidate = true;
-      });
+      fetchedData = await authService.getStudentData(grid: studentGlobal.grid);
     }
   }
 
@@ -121,250 +114,254 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
   }
 
   Widget getStudentData() {
-    return (_grid != null)
-        ? FutureBuilder(
-            future: authService.getStudentData(grid: _grid),
-            builder: (context, ss) {
-              double _width = MediaQuery.of(context).size.width;
-              double _height = MediaQuery.of(context).size.height;
-              if (ss.hasData) {
-                if (ss.data != null) {
-                  var data = ss.data;
-                  studentGlobal.grid = _grid.toString();
-                  studentGlobal.fname =
-                      data.first.fname != "" ? data.first.fname : "-";
-                  studentGlobal.lname =
-                      data.first.lname != "" ? data.first.lname : "-";
-                  studentGlobal.email =
-                      data.first.email != "" ? data.first.email : "-";
-                  studentGlobal.mobile =
-                      data.first.mobile != "" ? data.first.mobile : "-";
-                  studentGlobal.father_name = data.first.father_name != ""
-                      ? data.first.father_name
+    print("LOADED => ${studentGlobal.alreadyLoaded}");
+    if (studentGlobal.alreadyLoaded) {
+      return getHomePageData(context);
+    } else if (studentGlobal.grid != "") {
+      return FutureBuilder(
+          future: authService.getStudentData(grid: studentGlobal.grid),
+          builder: (context, ss) {
+            if (ss.hasData) {
+              if (ss.data != null) {
+                var data = ss.data;
+                studentGlobal.alreadyLoaded = true;
+                studentGlobal.fname =
+                    data.first.fname != "" ? data.first.fname : "-";
+                studentGlobal.lname =
+                    data.first.lname != "" ? data.first.lname : "-";
+                studentGlobal.image =
+                    data.first.image != "" ? data.first.image : "-";
+                studentGlobal.email =
+                    data.first.email != "" ? data.first.email : "-";
+                studentGlobal.mobile =
+                    data.first.mobile != "" ? data.first.mobile : "-";
+                studentGlobal.father_name =
+                    data.first.father_name != "" ? data.first.father_name : "-";
+                studentGlobal.father_mobile = data.first.father_mobile != ""
+                    ? data.first.father_mobile
+                    : "-";
+                studentGlobal.address =
+                    data.first.address != "" ? data.first.address : "-";
+                int l = studentGlobal.totalAdmissions;
+                clearAllLists();
+                for (int i = 0; i < l; i++) {
+                  var course_package = data[i].course_package != ""
+                      ? data[i].course_package
                       : "-";
-                  studentGlobal.father_mobile = data.first.father_mobile != ""
-                      ? data.first.father_mobile
+                  var course = data[i].course != "" ? data[i].course : "-";
+                  var branch =
+                      data[i].branch_name != "" ? data[i].branch_name : "-";
+                  var admission_date = data[i].admission_date != ""
+                      ? data[i].admission_date
                       : "-";
-                  studentGlobal.address =
-                      data.first.address != "" ? data.first.address : "-";
-                  int l = studentGlobal.totalAdmissions;
-                  clearAllLists();
-                  for (int i = 0; i < l; i++) {
-                    var course_package = data[i].course_package != ""
-                        ? data[i].course_package
-                        : "-";
-                    var course = data[i].course != "" ? data[i].course : "-";
-                    var branch =
-                        data[i].branch_name != "" ? data[i].branch_name : "-";
-                    var admission_date = data[i].admission_date != ""
-                        ? data[i].admission_date
-                        : "-";
-                    var admission_code = data[i].admission_code != ""
-                        ? data[i].admission_code
-                        : "-";
-                    var admission_status = data[i].admission_status != ""
-                        ? data[i].admission_status
-                        : "-";
-                    int total_fee = int.parse(
-                        data[i].total_fee != "" ? data[i].total_fee : "0");
-                    int paid_fee = int.parse(
-                        data[i].paid_fee != "" ? data[i].paid_fee : "0");
-                    var remaining_fee = total_fee - paid_fee;
+                  var admission_code = data[i].admission_code != ""
+                      ? data[i].admission_code
+                      : "-";
+                  var admission_status = data[i].admission_status != ""
+                      ? data[i].admission_status
+                      : "-";
+                  int total_fee = int.parse(
+                      data[i].total_fee != "" ? data[i].total_fee : "0");
+                  int paid_fee = int.parse(
+                      data[i].paid_fee != "" ? data[i].paid_fee : "0");
+                  var remaining_fee = total_fee - paid_fee;
 
-                    studentGlobal.course_packages.add(course_package);
-                    studentGlobal.courses.add(course);
-                    studentGlobal.branches.add(branch);
-                    studentGlobal.admission_dates.add(admission_date);
-                    studentGlobal.admission_codes.add(admission_code);
-                    studentGlobal.admission_statuses.add(admission_status);
-                    studentGlobal.total_fees.add(total_fee);
-                    studentGlobal.paid_fees.add(paid_fee);
-                    studentGlobal.remaining_fees.add(remaining_fee);
-                  }
-                  studentGlobal.remarks = data.first.remarks;
-                  return Column(
-                    children: [
-                      Container(
-                        height: _height * 0.15,
-                        margin: EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.red,
-                          ),
+                  studentGlobal.course_packages.add(course_package);
+                  studentGlobal.courses.add(course);
+                  studentGlobal.branches.add(branch);
+                  studentGlobal.admission_dates.add(admission_date);
+                  studentGlobal.admission_codes.add(admission_code);
+                  studentGlobal.admission_statuses.add(admission_status);
+                  studentGlobal.total_fees.add(total_fee);
+                  studentGlobal.paid_fees.add(paid_fee);
+                  studentGlobal.remaining_fees.add(remaining_fee);
+                }
+                studentGlobal.remarks = data.first.remarks;
+                return getHomePageData(context);
+              }
+              return Text("No Data");
+            }
+            return Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            );
+          });
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getHomePageData(context) {
+    double _width = MediaQuery.of(context).size.width;
+    double _height = MediaQuery.of(context).size.height;
+    return Column(
+      children: [
+        Container(
+          height: _height * 0.15,
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.red,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: _width * 0.01,
+              ),
+              CircleAvatar(
+                radius: _height * 0.07,
+                backgroundImage: _fetchImage(studentGlobal.image),
+              ),
+              VerticalDivider(
+                indent: 10,
+                endIndent: 10,
+                color: Colors.grey,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                        text: "GRID: ",
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: _width * 0.01,
+                        children: [
+                          TextSpan(
+                            text: studentGlobal.grid,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
-                            CircleAvatar(
-                              radius: _height * 0.07,
-                              backgroundImage: _fetchImage(data.first.image),
+                          ),
+                        ]),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                        text: "Name: ",
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        children: [
+                          TextSpan(
+                            text:
+                                "${studentGlobal.fname} ${studentGlobal.lname}",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
-                            VerticalDivider(
-                              indent: 10,
-                              endIndent: 10,
-                              color: Colors.grey,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                      text: "GRID: ",
-                                      style: TextStyle(
-                                        color: Colors.redAccent,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: studentGlobal.grid,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ]),
-                                ),
-                                RichText(
-                                  text: TextSpan(
-                                      text: "Name: ",
-                                      style: TextStyle(
-                                        color: Colors.redAccent,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                              "${data.first.fname} ${data.first.lname}",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ]),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Total Admissions: ",
-                                      style: TextStyle(
-                                        color: Colors.redAccent,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: 30,
-                                      height: 23,
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Text(
-                                        studentGlobal.totalAdmissions
-                                            .toString(),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
+                        ]),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Total Admissions: ",
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      // student details widget
                       Container(
-                        height: _height * 0.535,
-                        width: _width,
+                        alignment: Alignment.center,
+                        width: 30,
+                        height: 23,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.red,
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          studentGlobal.totalAdmissions.toString(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        margin: EdgeInsets.only(left: 8, right: 8, top: 8),
-                        child: ListView(
-                          physics: BouncingScrollPhysics(),
-                          children: [
-                            CustomListTile(
-                              title: "Email",
-                              data: studentGlobal.email,
-                              icon: Icons.email,
-                              canEmail: true,
-                            ),
-                            Divider(
-                              indent: 15,
-                              endIndent: 15,
-                            ),
-                            CustomListTile(
-                              title: "Contact",
-                              data: studentGlobal.mobile,
-                              icon: Icons.call,
-                              canCallStudent:
-                                  studentGlobal.mobile != "-" ? true : false,
-                              canWhatsAppStudent:
-                                  studentGlobal.mobile != "-" ? true : false,
-                            ),
-                            Divider(
-                              indent: 15,
-                              endIndent: 15,
-                            ),
-                            CustomListTile(
-                              title: "Father Name",
-                              data: studentGlobal.father_name,
-                              icon: Icons.account_circle,
-                            ),
-                            Divider(
-                              indent: 15,
-                              endIndent: 15,
-                            ),
-                            CustomListTile(
-                              title: "Father Contact",
-                              data: studentGlobal.father_mobile,
-                              icon: Icons.call,
-                              canCallFather: studentGlobal.father_mobile != "-"
-                                  ? true
-                                  : false,
-                              canWhatsAppFather:
-                                  studentGlobal.father_mobile != "-"
-                                      ? true
-                                      : false,
-                            ),
-                            Divider(
-                              indent: 15,
-                              endIndent: 15,
-                            ),
-                            CustomListTile(
-                              title: "Address",
-                              data: studentGlobal.address,
-                              icon: Icons.location_on,
-                            ),
-                          ],
-                        ),
-                      )
+                      ),
                     ],
-                  );
-                }
-                return Text("No Data");
-              }
-              return Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(),
-              );
-            })
-        : Container();
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // student details widget
+        Container(
+          height: _height * 0.535,
+          width: _width,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.red,
+            ),
+          ),
+          margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+          child: ListView(
+            physics: BouncingScrollPhysics(),
+            children: [
+              CustomListTile(
+                title: "Email",
+                data: studentGlobal.email,
+                icon: Icons.email,
+                canEmail: true,
+              ),
+              Divider(
+                indent: 15,
+                endIndent: 15,
+              ),
+              CustomListTile(
+                title: "Contact",
+                data: studentGlobal.mobile,
+                icon: Icons.call,
+                canCallStudent: studentGlobal.mobile != "-" ? true : false,
+                canWhatsAppStudent: studentGlobal.mobile != "-" ? true : false,
+              ),
+              Divider(
+                indent: 15,
+                endIndent: 15,
+              ),
+              CustomListTile(
+                title: "Father Name",
+                data: studentGlobal.father_name,
+                icon: Icons.account_circle,
+              ),
+              Divider(
+                indent: 15,
+                endIndent: 15,
+              ),
+              CustomListTile(
+                title: "Father Contact",
+                data: studentGlobal.father_mobile,
+                icon: Icons.call,
+                canCallFather:
+                    studentGlobal.father_mobile != "-" ? true : false,
+                canWhatsAppFather:
+                    studentGlobal.father_mobile != "-" ? true : false,
+              ),
+              Divider(
+                indent: 15,
+                endIndent: 15,
+              ),
+              CustomListTile(
+                title: "Address",
+                data: studentGlobal.address,
+                icon: Icons.location_on,
+              ),
+            ],
+          ),
+        )
+      ],
+    );
   }
 
   _fetchImage(image) {
@@ -489,7 +486,8 @@ class CustomListTile extends StatelessWidget {
           'subject': "From RNW",
           'body': "Hello ${fname + " " + lname}"
         });
-    String url = params.toString().replaceAll("+", "%20").replaceAll("%2520", "%20");
+    String url =
+        params.toString().replaceAll("+", "%20").replaceAll("%2520", "%20");
     if (await canLaunch(url)) {
       await launch(url);
     } else {

@@ -49,146 +49,154 @@ class _AdmissionPageState extends State<AdmissionPage> {
   }
 
   Widget CustomPageView(int i) {
-    return ListView(
-      physics: BouncingScrollPhysics(),
+    return Container(
+      margin: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.blue,
+        ),
+      ),
+      child: ListView(
+        physics: BouncingScrollPhysics(),
 
-      children: [
-        ListTile(
-          leading: Icon(Icons.assignment_turned_in),
-          title: Text(
-            "Course Package",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+        children: [
+          ListTile(
+            leading: Icon(Icons.assignment_turned_in),
+            title: Text(
+              "Course Package",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.course_packages[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.course_packages[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.assignment),
-          title: Text(
-            "Course",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+          ListTile(
+            leading: Icon(Icons.assignment),
+            title: Text(
+              "Course",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.courses[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.courses[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.location_city),
-          title: Text(
-            "Branch Name",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+          ListTile(
+            leading: Icon(Icons.location_city),
+            title: Text(
+              "Branch Name",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.branches[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.branches[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.date_range),
-          title: Text(
-            "Admission Date",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+          ListTile(
+            leading: Icon(Icons.date_range),
+            title: Text(
+              "Admission Date",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.admission_dates[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.admission_dates[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.code),
-          title: Text(
-            "Admission Code",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+          ListTile(
+            leading: Icon(Icons.code),
+            title: Text(
+              "Admission Code",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.admission_codes[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.admission_codes[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.flag),
-          title: Text(
-            "Admission Status",
-            style: TextStyle(fontSize: 16, color: Colors.blue),
+          ListTile(
+            leading: Icon(Icons.flag),
+            title: Text(
+              "Admission Status",
+              style: TextStyle(fontSize: 16, color: Colors.blue),
+            ),
+            subtitle: Text(
+              studentGlobal.admission_statuses[i],
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.admission_statuses[i],
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.monetization_on),
-          title: Text(
-            "Total Fees",
-            style: TextStyle(fontSize: 16, color: Colors.purple),
+          ListTile(
+            leading: Icon(Icons.monetization_on),
+            title: Text(
+              "Total Fees",
+              style: TextStyle(fontSize: 16, color: Colors.purple),
+            ),
+            subtitle: Text(
+              studentGlobal.total_fees[i].toString(),
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.total_fees[i].toString(),
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.attach_money),
-          title: Text(
-            "Paid Fees",
-            style: TextStyle(fontSize: 16, color: Colors.purple),
+          ListTile(
+            leading: Icon(Icons.attach_money),
+            title: Text(
+              "Paid Fees",
+              style: TextStyle(fontSize: 16, color: Colors.purple),
+            ),
+            subtitle: Text(
+              studentGlobal.paid_fees[i].toString(),
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.paid_fees[i].toString(),
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          leading: Icon(Icons.attach_money),
-          title: Text(
-            "Remaining Fees",
-            style: TextStyle(fontSize: 16, color: Colors.purple),
+          ListTile(
+            leading: Icon(Icons.attach_money),
+            title: Text(
+              "Remaining Fees",
+              style: TextStyle(fontSize: 16, color: Colors.purple),
+            ),
+            subtitle: Text(
+              studentGlobal.remaining_fees[i].toString(),
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          subtitle: Text(
-            studentGlobal.remaining_fees[i].toString(),
-            style: TextStyle(fontSize: 16),
+          Divider(
+            indent: 15,
+            endIndent: 15,
           ),
-        ),
-        Divider(
-          indent: 15,
-          endIndent: 15,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

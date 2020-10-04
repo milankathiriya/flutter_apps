@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:student_finder/models/StudentModel.dart';
 import 'package:student_finder/screens/intro_screens/login_screen.dart';
 import 'package:student_finder/screens/intro_screens/splash_screen.dart';
 import 'package:student_finder/screens/main_screens/home_screen.dart';

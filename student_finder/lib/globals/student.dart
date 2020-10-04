@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class StudentGlobal {
+  bool alreadyLoaded = false;
   String grid = "";
   String fname = "";
   String lname = "";

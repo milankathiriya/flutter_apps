@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_finder/globals/student.dart';
 
 class SideDrawer extends StatefulWidget {
   SideDrawer({Key key}) : super(key: key);
@@ -36,7 +37,8 @@ class _SideDrawerState extends State<SideDrawer> {
         children: [
           DrawerHeader(
             child: CircleAvatar(
-              radius: 80,
+              radius: 70,
+              backgroundImage: AssetImage("assets/images/rnw_pic.png"),
             ),
           ),
           Divider(
@@ -50,27 +52,23 @@ class _SideDrawerState extends State<SideDrawer> {
           Text(
             "RWn. $uname",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            height: 20,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
             email,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 16, color: Colors.blueGrey),
           ),
           SizedBox(
             height: 20,
           ),
-          RaisedButton(
-            padding: EdgeInsets.all(12),
-            child: Text(
+          FloatingActionButton.extended(
+            icon: Icon(Icons.power_settings_new),
+            label: Text(
               "Logout",
               style: TextStyle(fontSize: 16),
             ),
-            color: Colors.black,
-            textColor: Colors.white,
+            backgroundColor: Color(0xff2b2a28),
             onPressed: showDialogAndLogout,
           ),
         ],
@@ -98,6 +96,7 @@ class _SideDrawerState extends State<SideDrawer> {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.clear();
+                  studentGlobal = StudentGlobal();
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/login', (route) => false);
                 },

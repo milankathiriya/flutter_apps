@@ -30,10 +30,10 @@ class AuthService {
     }
   }
 
-  Future<List<StudentModel>> getStudentData({int grid}) async {
+  Future<List<StudentModel>> getStudentData({String grid}) async {
     var res = await http.post(
         "http://demo.rnwmultimedia.com/eduzila_api/Android_api/Android_api.php",
-        body: {"gr_id": grid.toString()});
+        body: {"gr_id": grid});
 
     if (res.statusCode == 200) {
       if (res.body.isNotEmpty) {
