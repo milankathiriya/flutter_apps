@@ -83,7 +83,7 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
               child: FloatingActionButton(
                 child: Icon(Icons.cloud_download),
                 backgroundColor: Colors.red,
-                onPressed: validateGRIDAndFetchData,
+                onPressed: () => validateGRIDAndFetchData(),
               ),
             ),
           ],
@@ -93,8 +93,8 @@ class _GeneralInfoPageState extends State<GeneralInfoPage> {
   }
 
   validateGRIDAndFetchData() async {
-    studentGlobal.alreadyLoaded = false;
     SystemChannels.textInput.invokeMethod('TextInput.hide');
+    studentGlobal.alreadyLoaded = false;
     if (_studentFindingFormKey.currentState.validate()) {
       _studentFindingFormKey.currentState.save();
       fetchedData = await authService.getStudentData(grid: studentGlobal.grid);

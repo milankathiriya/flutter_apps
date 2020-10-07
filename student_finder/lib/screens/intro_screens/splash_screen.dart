@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 18,
               ),
               Text(
-                "Student Follow Up",
+                "Student Finder",
                 style: TextStyle(fontSize: 20),
               ),
               SizedBox(
