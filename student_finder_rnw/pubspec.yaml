@@ -29,6 +29,7 @@ dependencies:
   device_info: ^0.4.2+9
   http: ^0.12.2
   bottom_navy_bar: ^5.5.0
+  font_awesome_flutter: ^8.10.0
 
 dev_dependencies:
   flutter_test:

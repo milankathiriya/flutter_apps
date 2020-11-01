@@ -113,21 +113,7 @@ class _HomePageState extends State<HomePage> {
       var res = await studentController.fetchStudentDetail(
           grid: studentController.GRID.value);
 
-      String stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
-
-      try {
-        if (res.first.image.toString() == "/Eduzilla_image/rnw.jpg") {
-          print("yes");
-          stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
-        } else {
-          stu_img =
-              "http://demo.rnwmultimedia.com/eduzila_api" + res.first.image;
-        }
-      } catch (e) {
-        stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
-      }
-
-      studentController.image.value = stu_img;
+      await setStudentInfo(res);
 
       Get.toNamed('/basic_info');
 
@@ -135,5 +121,38 @@ class _HomePageState extends State<HomePage> {
         _stackIndex = 0;
       });
     }
+  }
+
+  setStudentInfo(res) {
+    String stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
+
+    try {
+      if (res.first.image.toString() == "/Eduzilla_image/rnw.jpg") {
+        print("yes");
+        stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
+      } else {
+        stu_img = "http://demo.rnwmultimedia.com/eduzila_api" + res.first.image;
+      }
+    } catch (e) {
+      stu_img = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
+    }
+
+    studentController.image.value = stu_img;
+    studentController.fname.value = res.first.fname;
+    studentController.lname.value = res.first.lname;
+    studentController.total_admissions.value = res.length;
+    studentController.email.value =
+        res.first.email == "-" ? "-" : res.first.email;
+    studentController.mobile.value =
+        res.first.mobile == "" ? "-" : res.first.mobile;
+    studentController.father_name.value =
+        res.first.father_name == "" ? "-" : res.first.father_name;
+    studentController.father_mobile.value =
+        res.first.father_mobile == "" ? "-" : res.first.father_mobile;
+    studentController.address.value =
+        res.first.address == "" ? "-" : res.first.address;
+
+    print("REMARKS => ${res.first.remarks}");
+    studentController.remarks.value = res.first.remarks;
   }
 }

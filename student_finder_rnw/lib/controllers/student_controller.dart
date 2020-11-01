@@ -7,6 +7,15 @@ import 'package:student_finder_rnw/models/student_detail_model.dart';
 class StudentController extends GetxController {
   var GRID = "".obs;
   var image = "".obs;
+  var fname = "".obs;
+  var lname = "".obs;
+  var total_admissions = 1.obs;
+  var email = "-".obs;
+  var mobile = "-".obs;
+  var father_name = "-".obs;
+  var father_mobile = "-".obs;
+  var address = "-".obs;
+  var remarks = List().obs;
 
   Future<List<StudentDetailModel>> fetchStudentDetail({String grid}) async {
     final res = await http.post(
@@ -25,4 +34,5 @@ class StudentController extends GetxController {
       return StudentDetailModel.fromJson(elem);
     }).toList();
   }
+
 }

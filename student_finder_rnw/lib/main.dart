@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:student_finder_rnw/controllers/student_controller.dart';
 import 'package:student_finder_rnw/views/screens/course_details_screen.dart';
 import 'package:student_finder_rnw/views/screens/home_screen.dart';
 import 'package:student_finder_rnw/views/screens/login_screen.dart';
@@ -18,19 +19,22 @@ Black  :- #2b2a28
 */
 
 void main() async {
-
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Color(0xff2b2a28), // navigation bar color
-    statusBarColor: Color(0xff2b2a28), // status bar color
-    statusBarBrightness: Brightness.light,//status bar brigtness
-    statusBarIconBrightness:Brightness.light , //status barIcon Brightness
-    systemNavigationBarDividerColor: Colors.redAccent,//Navigation bar divider color
+    systemNavigationBarColor: Color(0xff2b2a28),
+    // navigation bar color
+    statusBarColor: Color(0xff2b2a28),
+    // status bar color
+    statusBarBrightness: Brightness.dark,
+    //status bar brightness
+    statusBarIconBrightness: Brightness.dark,
+    //status barIcon Brightness
+    systemNavigationBarDividerColor: Colors.redAccent,
+    //Navigation bar divider color
     systemNavigationBarIconBrightness: Brightness.light, //navigation bar icon
   ));
 
 
   await GetStorage.init();
-
 
   runApp(
     GetMaterialApp(
@@ -38,8 +42,8 @@ void main() async {
       initialRoute: '/splash',
       getPages: [
         GetPage(
-          name: '/',
-          page: () => HomePage(),
+            name: '/',
+            page: () => HomePage(),
         ),
         GetPage(
           name: '/splash',
