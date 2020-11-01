@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:student_finder_rnw/controllers/student_controller.dart';
 import 'package:student_finder_rnw/globals/faculty_detail.dart';
-import 'package:student_finder_rnw/views/components/my_header.dart';
 
 class Remarks extends StatefulWidget {
   @override
@@ -33,13 +32,12 @@ class _RemarksState extends State<Remarks> {
                     children: [
                       Container(
                         height: Get.height * 0.18,
-                        decoration: new BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
-                          image: new DecorationImage(
+                          image: DecorationImage(
                             fit: BoxFit.contain,
-                            image:
-                                new NetworkImage(studentController.image.value),
+                            image: NetworkImage(studentController.image.value),
                           ),
                         ),
                       ),
@@ -96,9 +94,18 @@ class _RemarksState extends State<Remarks> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FaIcon(FontAwesomeIcons.searchengin, color: Colors.teal, size: 35,),
-                        SizedBox(height: 15,),
-                        Text("No Any Remarks...", style: TextStyle(color: Colors.teal, fontSize: 22),),
+                        FaIcon(
+                          FontAwesomeIcons.searchengin,
+                          color: Colors.teal,
+                          size: 35,
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          "No Any Remarks...",
+                          style: TextStyle(color: Colors.teal, fontSize: 22),
+                        ),
                       ],
                     ),
                   )

@@ -19,14 +19,14 @@ class _MyDrawerState extends State<MyDrawer> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            DrawerHeader(
-              child: CircleAvatar(
-                radius: Get.height * 0.1,
-                backgroundImage: NetworkImage(
-                  facultyDetail.image,
-                ),
+            Spacer(),
+            CircleAvatar(
+              radius: Get.height * 0.09,
+              backgroundImage: NetworkImage(
+                facultyDetail.image,
               ),
             ),
+            Spacer(),
             Text(
               "RWn. " + facultyDetail.user_name,
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
@@ -38,14 +38,13 @@ class _MyDrawerState extends State<MyDrawer> {
               facultyDetail.email,
               style: TextStyle(color: Colors.blueGrey),
             ),
-            SizedBox(
-              height: Get.height * 0.02,
-            ),
+            Spacer(),
             Divider(
               color: Colors.red,
               indent: 35,
               endIndent: 35,
             ),
+            Spacer(),
             ListTile(
               onTap: () {},
               leading: Icon(Icons.people),
@@ -85,9 +84,7 @@ class _MyDrawerState extends State<MyDrawer> {
               subtitle: Text("Course"),
             ),
             // Divider(color: Colors.grey, indent: 70, endIndent: 35,),
-            SizedBox(
-              height: Get.height * 0.0245,
-            ),
+            Spacer(),
             ListTile(
               tileColor: Theme.of(context).accentColor,
               onTap: logout,

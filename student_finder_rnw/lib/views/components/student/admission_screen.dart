@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:student_finder_rnw/controllers/student_controller.dart';
 import 'package:student_finder_rnw/globals/faculty_detail.dart';
-import 'package:student_finder_rnw/views/components/my_header.dart';
 
 class Admission extends StatefulWidget {
   @override
@@ -46,13 +45,12 @@ class _AdmissionState extends State<Admission> with TickerProviderStateMixin {
                   children: [
                     Container(
                       height: Get.height * 0.18,
-                      decoration: new BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white,
-                        image: new DecorationImage(
+                        image: DecorationImage(
                           fit: BoxFit.contain,
-                          image:
-                              new NetworkImage(studentController.image.value),
+                          image: NetworkImage(studentController.image.value),
                         ),
                       ),
                     ),
@@ -63,8 +61,7 @@ class _AdmissionState extends State<Admission> with TickerProviderStateMixin {
                       backgroundColor: Theme.of(context).primaryColor,
                       label: Text(
                         "Admissions: " +
-                            studentController.total_admissions.value
-                                .toString(),
+                            studentController.total_admissions.value.toString(),
                         style: TextStyle(
                             color: Colors.tealAccent,
                             fontSize: 16,
@@ -100,31 +97,158 @@ class _AdmissionState extends State<Admission> with TickerProviderStateMixin {
               ],
             ),
           ),
-          // No of Student Admission
 
-          TabBar(
-            controller: tabController,
-            tabs:
-                List.generate(studentController.total_admissions.value, (i) {
-              return Tab(
-                child: Text("Ad. ${i + 1}"),
-              );
-            }),
-            labelColor: Colors.black,
-            indicatorColor: Colors.black,
-            unselectedLabelColor: Colors.grey,
-            indicatorPadding: EdgeInsets.symmetric(horizontal: 12),
+          // No of Student Admissions
+          DefaultTabController(
+            length: studentController.total_admissions.value,
+            child: Column(
+              children: [
+                TabBar(
+                  tabs: List.generate(studentController.total_admissions.value,
+                      (i) {
+                    return Tab(
+                      child: Text("Ad. ${i + 1}"),
+                    );
+                  }),
+                  labelColor: Colors.black,
+                  indicatorColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorPadding: EdgeInsets.symmetric(horizontal: 12),
+                ),
+                Container(
+                  height: Get.height * 0.42,
+                  // color: Colors.red[100],
+                  child: TabBarView(
+                    children: List.generate(
+                        studentController.total_admissions.value, (i) {
+                      List courses = studentController.courses[i].split(",");
+                      var course = courses.join(",\n");
+
+                      var course_package = studentController.course_packages[i];
+                      var branch_name = studentController.branch_names[i];
+                      var admission_date = studentController.admission_dates[i];
+                      var admission_code = studentController.admission_codes[i];
+                      var admission_status =
+                          studentController.admission_statuses[i];
+                      var total_fee = studentController.total_fees[i];
+                      var paid_fee = studentController.paid_fees[i];
+                      var remaining_fee = int.parse(studentController.total_fees[i]) - int.parse(studentController.paid_fees[i]);
+                      return ListView(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.assignment_turned_in),
+                            title: Text(
+                              "Course Package",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(course_package),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.assignment),
+                            title: Text(
+                              "Course",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(course),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.location_city),
+                            title: Text(
+                              "Branch Name",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(branch_name),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.calendar_today),
+                            title: Text(
+                              "Admission Date",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(admission_date),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.code),
+                            title: Text(
+                              "Admission Code",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(admission_code),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.flag),
+                            title: Text(
+                              "Admission Status",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            subtitle: Text(admission_status),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading:
+                                Icon(Icons.monetization_on),
+                            title: Text(
+                              "Total Fees",
+                              style: TextStyle(color: Colors.purple),
+                            ),
+                            subtitle: Text(total_fee),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading:
+                                Icon(Icons.attach_money),
+                            title: Text(
+                              "Paid Fees",
+                              style: TextStyle(color: Colors.purple),
+                            ),
+                            subtitle: Text(paid_fee),
+                          ),
+                          Divider(),
+                          ListTile(
+                            leading:
+                                Icon(Icons.attach_money),
+                            title: Text(
+                              "Remaining Fees",
+                              style: TextStyle(color: Colors.purple),
+                            ),
+                            subtitle: Text(remaining_fee.toString()),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
           ),
-          TabBarView(
-            controller: tabController,
-            // FIXME: fix this issue
-            children: [
-              Container(child: Text("12")),
-              Container(child: Text("12")),
-              Container(child: Text("12")),
-              Container(child: Text("12")),
-            ],
-          ),
+
+          // TabBar(
+          //   controller: tabController,
+          //   tabs: List.generate(studentController.total_admissions.value, (i) {
+          //     return Tab(
+          //       child: Text("Ad. ${i + 1}"),
+          //     );
+          //   }),
+          //   labelColor: Colors.black,
+          //   indicatorColor: Colors.black,
+          //   unselectedLabelColor: Colors.grey,
+          //   indicatorPadding: EdgeInsets.symmetric(horizontal: 12),
+          // ),
+          // TabBarView(
+          //   controller: tabController,
+          //   // FIXME: fix this issue
+          //   children: [
+          //     Container(child: Text("12")),
+          //     Container(child: Text("12")),
+          //     Container(child: Text("12")),
+          //     Container(child: Text("12")),
+          //   ],
+          // ),
         ],
       ),
     );

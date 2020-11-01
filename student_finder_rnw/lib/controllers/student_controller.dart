@@ -16,6 +16,14 @@ class StudentController extends GetxController {
   var father_mobile = "-".obs;
   var address = "-".obs;
   var remarks = List().obs;
+  var courses = List().obs;
+  var course_packages = List().obs;
+  var branch_names = List().obs;
+  var admission_dates = List().obs;
+  var admission_codes = List().obs;
+  var admission_statuses = List().obs;
+  var total_fees = List().obs;
+  var paid_fees = List().obs;
 
   Future<List<StudentDetailModel>> fetchStudentDetail({String grid}) async {
     final res = await http.post(

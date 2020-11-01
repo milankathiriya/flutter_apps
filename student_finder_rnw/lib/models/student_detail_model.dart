@@ -7,6 +7,7 @@ class StudentDetailModel {
   final String father_mobile;
   final String address;
   final String course;
+  final String course_package;
   final String admission_date;
   final String total_fees;
   final String paid_fees;
@@ -25,6 +26,7 @@ class StudentDetailModel {
       this.father_mobile,
       this.address,
       this.course,
+      this.course_package,
       this.admission_date,
       this.total_fees,
       this.paid_fees,
@@ -46,6 +48,7 @@ class StudentDetailModel {
       father_mobile: json['father_mobile'],
       address: json['address'],
       course: json['course'],
+      course_package: json['course_package'],
       admission_date: json['admission_date'],
       total_fees: json['total_fees'],
       paid_fees: json['paid_fees'],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:student_finder_rnw/controllers/auth_controller.dart';
 import 'package:student_finder_rnw/controllers/student_controller.dart';
@@ -64,6 +65,7 @@ class _HomePageState extends State<HomePage> {
                           grid = val;
                         });
                       },
+                      onEditingComplete: validateAndFetchStudentDetail,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "GRID",
@@ -99,6 +101,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   validateAndFetchStudentDetail() async {
+
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+
     if (_gridFormKey.currentState.validate()) {
       _gridFormKey.currentState.save();
 
@@ -151,8 +156,58 @@ class _HomePageState extends State<HomePage> {
         res.first.father_mobile == "" ? "-" : res.first.father_mobile;
     studentController.address.value =
         res.first.address == "" ? "-" : res.first.address;
-
-    print("REMARKS => ${res.first.remarks}");
     studentController.remarks.value = res.first.remarks;
+
+    studentController.courses.clear();
+    res.forEach((e) {
+      print(e.course);
+      studentController.courses.add(e.course);
+    });
+
+    studentController.course_packages.clear();
+    res.forEach((e) {
+      print(e.course_package);
+      if (e.course_package == "" || e.course_package.isEmpty) {
+        studentController.course_packages.add("-");
+      } else {
+        studentController.course_packages.add(e.course_package);
+      }
+    });
+
+    studentController.branch_names.clear();
+    res.forEach((e) {
+      print(e.branch_name);
+      studentController.branch_names.add(e.branch_name);
+    });
+
+    studentController.admission_dates.clear();
+    res.forEach((e) {
+      print(e.admission_date);
+      studentController.admission_dates.add(e.admission_date);
+    });
+
+    studentController.admission_codes.clear();
+    res.forEach((e) {
+      print(e.admission_code);
+      studentController.admission_codes.add(e.admission_code);
+    });
+
+    studentController.admission_statuses.clear();
+    res.forEach((e) {
+      print(e.admission_status);
+      studentController.admission_statuses.add(e.admission_status);
+    });
+
+    studentController.total_fees.clear();
+    res.forEach((e) {
+      print(e.total_fees);
+      studentController.total_fees.add(e.total_fees);
+    });
+
+    studentController.paid_fees.clear();
+    res.forEach((e) {
+      print(e.paid_fees);
+      studentController.paid_fees.add(e.paid_fees);
+    });
   }
 }

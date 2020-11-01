@@ -19,6 +19,7 @@ Black  :- #2b2a28
 */
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Color(0xff2b2a28),
     // navigation bar color
