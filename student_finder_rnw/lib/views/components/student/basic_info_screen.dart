@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:student_finder_rnw/controllers/student_controller.dart';
 import 'package:student_finder_rnw/globals/faculty_detail.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BasicInfo extends StatefulWidget {
   @override
@@ -102,7 +104,9 @@ class _BasicInfoState extends State<BasicInfo> {
                       mini: true,
                       tooltip: "Email Student",
                       backgroundColor: Colors.blueGrey,
-                      onPressed: () {},
+                      onPressed: () async {
+                        await _emailTo();
+                      },
                       child: FaIcon(
                         FontAwesomeIcons.solidEnvelope,
                         size: 22,
@@ -124,28 +128,28 @@ class _BasicInfoState extends State<BasicInfo> {
                         FloatingActionButton(
                           tooltip: "Call Student",
                           heroTag: null,
-
                           mini: true,
                           backgroundColor: Colors.blue,
                           child: FaIcon(
                             FontAwesomeIcons.phoneAlt,
                             size: 22,
                           ),
-                          // TODO: Add calling functionality
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _callTo(studentController.mobile.value);
+                          },
                         ),
                         FloatingActionButton(
                           tooltip: "WhatsApp Student",
                           heroTag: null,
-
                           mini: true,
                           backgroundColor: Colors.green,
                           child: FaIcon(
                             FontAwesomeIcons.whatsapp,
                             size: 25,
                           ),
-                          // TODO: Add whatsapp functionality
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _whatsAppToStudent();
+                          },
                         ),
                       ]
                     : [Text("")],
@@ -177,15 +181,16 @@ class _BasicInfoState extends State<BasicInfo> {
                         FloatingActionButton(
                           tooltip: "Call Father",
                           heroTag: null,
-
                           mini: true,
                           backgroundColor: Colors.blue,
                           child: FaIcon(
                             FontAwesomeIcons.phoneAlt,
                             size: 22,
                           ),
-                          // TODO: Add calling functionality
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _callTo(
+                                studentController.father_mobile.value);
+                          },
                         ),
                         FloatingActionButton(
                           heroTag: null,
@@ -196,8 +201,9 @@ class _BasicInfoState extends State<BasicInfo> {
                             FontAwesomeIcons.whatsapp,
                             size: 25,
                           ),
-                          // TODO: Add whatsapp functionality
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _whatsAppToFather();
+                          },
                         ),
                       ]
                     : [Text("")],
@@ -223,5 +229,57 @@ class _BasicInfoState extends State<BasicInfo> {
         ),
       ),
     );
+  }
+
+  _emailTo() async {
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: studentController.email.value,
+      queryParameters: {
+        'subject':
+            "${Uri.encodeComponent('Red and White Group of Institutes')}",
+        'body':
+            "${Uri.encodeComponent('Hello ${studentController.fname} ${studentController.lname}')}",
+      },
+    );
+
+    String url =
+        params.toString().replaceAll("+", "%20").replaceAll("%2520", "%20");
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  _callTo(number) async {
+    bool res = await FlutterPhoneDirectCaller.callNumber(number);
+    print("CALL => $res");
+  }
+
+  _whatsAppToStudent() async {
+    // TODO: make student and father separate msgs with multiple template msgs
+    String msg =
+        "Hello ${studentController.fname.value} ${studentController.lname.value}, \n - *RWn. ${facultyDetail.user_name}* \n - From *Red and White Group of Institutes*";
+    String url =
+        "https://api.whatsapp.com/send?phone=+91${studentController.mobile.value}&text=$msg";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
+  }
+
+  _whatsAppToFather() async {
+    // TODO: make student and father separate msgs with multiple template msgs
+    String msg =
+        "Hello ${studentController.father_name.value}, \n - *RWn. ${facultyDetail.user_name}* \n - From *Red and White Group of Institutes*";
+    String url =
+        "https://api.whatsapp.com/send?phone=+91${studentController.father_mobile.value}&text=$msg";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
   }
 }

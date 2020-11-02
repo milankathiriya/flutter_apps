@@ -226,29 +226,6 @@ class _AdmissionState extends State<Admission> with TickerProviderStateMixin {
               ],
             ),
           ),
-
-          // TabBar(
-          //   controller: tabController,
-          //   tabs: List.generate(studentController.total_admissions.value, (i) {
-          //     return Tab(
-          //       child: Text("Ad. ${i + 1}"),
-          //     );
-          //   }),
-          //   labelColor: Colors.black,
-          //   indicatorColor: Colors.black,
-          //   unselectedLabelColor: Colors.grey,
-          //   indicatorPadding: EdgeInsets.symmetric(horizontal: 12),
-          // ),
-          // TabBarView(
-          //   controller: tabController,
-          //   // FIXME: fix this issue
-          //   children: [
-          //     Container(child: Text("12")),
-          //     Container(child: Text("12")),
-          //     Container(child: Text("12")),
-          //     Container(child: Text("12")),
-          //   ],
-          // ),
         ],
       ),
     );

@@ -15,6 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _gridFormKey = GlobalKey<FormState>();
+  FocusNode fieldNode = FocusNode();
+
   String grid;
 
   int _stackIndex = 0;
@@ -45,6 +47,7 @@ class _HomePageState extends State<HomePage> {
                     key: _gridFormKey,
                     child: TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
+                      focusNode: fieldNode,
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return "Enter any GRID";
@@ -95,12 +98,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        drawer: MyDrawer(),
+        drawer: MyDrawer(node: fieldNode,),
       ),
     );
   }
 
   validateAndFetchStudentDetail() async {
+
+    FocusScope.of(context).unfocus();
 
     SystemChannels.textInput.invokeMethod('TextInput.hide');
 

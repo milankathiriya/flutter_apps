@@ -5,12 +5,32 @@ import 'package:student_finder_rnw/controllers/dept_branch_controller.dart';
 import 'package:student_finder_rnw/globals/faculty_detail.dart';
 
 class MyDrawer extends StatefulWidget {
+  final FocusNode node;
+
+  MyDrawer({Key key, this.node}) : super(key: key);
+
   @override
   _MyDrawerState createState() => _MyDrawerState();
 }
 
 class _MyDrawerState extends State<MyDrawer> {
   DeptBranchController deptBranchController = DeptBranchController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.node != null) {
+      widget.node.unfocus();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.node != null) {
+      widget.node.unfocus();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
