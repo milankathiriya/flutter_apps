@@ -5,8 +5,8 @@ import 'package:student_finder_rnw/globals/faculty_detail.dart';
 import 'package:student_finder_rnw/models/dept_branch_model.dart';
 
 class DeptBranchController extends GetxController {
-  var departments = [].obs;
-  var branches = [].obs;
+  var departments = List().obs;
+  var branches = List().obs;
 
   getDeptBranchInfo() async {
     final res = await http.get(
@@ -22,9 +22,7 @@ class DeptBranchController extends GetxController {
         var dept_id = facultyDetail?.department_id;
         String dept = "";
         departments.forEach((element) {
-          print(element);
           if (element['department_id'] == dept_id) {
-            print(element['department_name']);
             dept = element['department_name'];
             facultyDetail.department = dept;
           }
@@ -33,9 +31,7 @@ class DeptBranchController extends GetxController {
         var branch_id = facultyDetail?.branch_id;
         String branch = "";
         branches.forEach((element) {
-          print(element);
           if (element['branch_id'] == branch_id) {
-            print(element['branch_name']);
             branch = element['branch_name'];
             facultyDetail.branch = branch;
           }

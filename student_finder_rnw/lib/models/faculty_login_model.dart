@@ -21,6 +21,8 @@ class FacultyLoginModel {
       this.msg});
 
   factory FacultyLoginModel.fromJson(Map<String, dynamic> json) {
+    if (json == null) return null;
+
     if (json['msg']!=null) {
       if (json['msg'].isNotEmpty) {
         return FacultyLoginModel(

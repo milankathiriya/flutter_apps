@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController = TextEditingController();
 
   final passwordFocus = FocusNode();
+  int _stackIndex = 0;
 
   String email;
   String password;
@@ -54,175 +55,184 @@ class _LoginScreenState extends State<LoginScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        child: Container(
-          height: Get.height*0.885,
-          child: Column(
-            children: [
-              Spacer(flex: 1,),
-              CircleAvatar(
-                radius: 80,
-                backgroundImage: AssetImage("assets/images/rnw.jpg"),
-              ),
-              Spacer(flex: 3,),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25),
-                child: Column(
-                  children: [
-                    Form(
-                      key: _loginFormKey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _emailController,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return "Enter Email Address...";
-                              }
-                              return null;
-                            },
-                            onSaved: (val) {
-                              setState(() {
-                                email = val;
-                              });
-                            },
-                            textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (val){
-                              FocusScope.of(context).requestFocus(passwordFocus);
-                            },
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.email),
-                              hintText: "Enter your email address",
-                              labelText: "Email",
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  30,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  30,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: Get.height * 0.020,
-                          ),
-                          TextFormField(
-                            controller: _passwordController,
-                            focusNode: passwordFocus,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            obscureText: true,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return "Enter Password...";
-                              }
-                              return null;
-                            },
-                            onSaved: (val) {
-                              setState(() {
-                                password = val;
-                              });
-                            },
-                            textInputAction: TextInputAction.done,
-                            onEditingComplete: () async {
-                              SystemChannels.textInput.invokeMethod('TextInput.hide');
-                              var res = await validateAndLogin();
-                              print(res);
-                              if (res == 1) {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                GetStorage().writeIfNull('email', email);
-                                GetStorage().writeIfNull('password', password);
-                                Get.offAllNamed('/');
-                              } else {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              }
-                            },
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.security),
-                              hintText: "Enter your password",
-                              labelText: "Password",
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  30,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                  color: Theme.of(context).primaryColor,
+        child: IndexedStack(
+          index: _stackIndex,
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: Get.height*0.885,
+              child: Column(
+                children: [
+                  Spacer(flex: 1,),
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundImage: AssetImage("assets/images/rnw.jpg"),
+                  ),
+                  Spacer(flex: 3,),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 25),
+                    child: Column(
+                      children: [
+                        Form(
+                          key: _loginFormKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: _emailController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return "Enter Email Address...";
+                                  }
+                                  return null;
+                                },
+                                onSaved: (val) {
+                                  setState(() {
+                                    email = val;
+                                  });
+                                },
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (val){
+                                  FocusScope.of(context).requestFocus(passwordFocus);
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.email),
+                                  hintText: "Enter your email address",
+                                  labelText: "Email",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      30,
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      30,
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  30,
-                                ),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                  color: Theme.of(context).primaryColor,
+                              SizedBox(
+                                height: Get.height * 0.020,
+                              ),
+                              TextFormField(
+                                controller: _passwordController,
+                                focusNode: passwordFocus,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                obscureText: true,
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return "Enter Password...";
+                                  }
+                                  return null;
+                                },
+                                onSaved: (val) {
+                                  setState(() {
+                                    password = val;
+                                  });
+                                },
+                                textInputAction: TextInputAction.done,
+                                onEditingComplete: () async {
+                                  SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                  var res = await validateAndLogin();
+                                  print(res);
+                                  if (res == 1) {
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
+                                    GetStorage().writeIfNull('email', email);
+                                    GetStorage().writeIfNull('password', password);
+                                    Get.offAllNamed('/');
+                                  } else {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.security),
+                                  hintText: "Enter your password",
+                                  labelText: "Password",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      30,
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      30,
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: Get.height * 0.020,
-                          ),
-                          (_isLoading == false)
-                              ? FloatingActionButton.extended(
-                                  icon: Icon(Icons.login_rounded),
-                                  backgroundColor: Theme.of(context).primaryColor,
-                                  onPressed: () async {
-                                    var res = await validateAndLogin();
-                                    print(res);
-                                    if (res == 1) {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      GetStorage().writeIfNull('email', email);
-                                      GetStorage().writeIfNull('password', password);
-                                      Get.offAllNamed('/');
-                                    } else {
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    }
-                                  },
-                                  label: Text("Login"),
+                              SizedBox(
+                                height: Get.height * 0.020,
+                              ),
+                              (_isLoading == false)
+                                  ? FloatingActionButton.extended(
+                                icon: Icon(Icons.login_rounded),
+                                backgroundColor: Theme.of(context).primaryColor,
+                                onPressed: () async {
+                                  var res = await validateAndLogin();
+                                  print(res);
+                                  if (res == 1) {
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
+                                    GetStorage().writeIfNull('email', email);
+                                    GetStorage().writeIfNull('password', password);
+                                    Get.offAllNamed('/');
+                                  } else {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
+                                },
+                                label: Text("Login"),
+                              )
+                                  : CircularProgressIndicator(),
+                              SizedBox(
+                                height: Get.height * 0.020,
+                              ),
+                              Obx(() {
+                                return (_authController.success.value == false)
+                                    ? Text(
+                                  _authController.msg.value,
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.red),
                                 )
-                              : CircularProgressIndicator(),
-                          SizedBox(
-                            height: Get.height * 0.020,
+                                    : Text("");
+                              }),
+                            ],
                           ),
-                          Obx(() {
-                            return (_authController.success.value == false)
-                                ? Text(
-                                    _authController.msg.value,
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.red),
-                                  )
-                                : Text("");
-                          }),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Spacer(flex: 1,),
+                ],
               ),
-              Spacer(flex: 1,),
-            ],
-          ),
+            ),
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+          ],
         ),
       ),
     );
@@ -233,8 +243,17 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_loginFormKey.currentState.validate()) {
       _loginFormKey.currentState.save();
 
+      setState(() {
+        _stackIndex = 1;
+      });
+
       var res = await _authController.login(email, password, deviceToken);
       print("RES => $res");
+
+      setState(() {
+        _stackIndex = 0;
+      });
+
       return (res == false) ? 0 : 1;
     }
     // return 0;

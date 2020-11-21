@@ -8,6 +8,7 @@ class DeptBranchModel {
   });
 
   factory DeptBranchModel.fromJson(Map<String, dynamic> json) {
+    if (json == null) return null;
     return DeptBranchModel(
       departments: json['department'],
       branches: json['branch'],

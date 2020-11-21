@@ -18,6 +18,8 @@ Light gray  :- #fefefe
 Black  :- #2b2a28
 */
 
+// TODO: Add connectivity package for internet connectivity
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
