@@ -94,15 +94,16 @@ class _MyDrawerState extends State<MyDrawer> {
               title: Text(facultyDetail?.branch ?? "SARTHANA"),
               subtitle: Text("Branch"),
             ),
-            ListTile(
-              onTap: () {
-                Get.back();
-                Get.toNamed('/course_details');
-              },
-              leading: Icon(Icons.assignment),
-              title: Text("Course Details"),
-              subtitle: Text("Course"),
-            ),
+            // TODO: Complete course_details functionality and enable below comment
+            // ListTile(
+            //   onTap: () {
+            //     Get.back();
+            //     Get.toNamed('/course_details');
+            //   },
+            //   leading: Icon(Icons.assignment),
+            //   title: Text("Course Details"),
+            //   subtitle: Text("Course"),
+            // ),
             // Divider(color: Colors.grey, indent: 70, endIndent: 35,),
             Spacer(),
             ListTile(

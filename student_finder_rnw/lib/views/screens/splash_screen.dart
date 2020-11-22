@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -16,9 +18,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   AuthController _authController = AuthController();
 
+  final Connectivity connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> subscription;
+  String internetStatus = "unknown internet status";
+
+  // TODO: fix internet connectivity funcionality
+  checkConnection() async {
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      print("internet status res => ${result}");
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          internetStatus = "Disconnected from Internet...";
+        });
+        Get.snackbar(internetStatus, internetStatus);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    checkConnection();
+    print(internetStatus);
 
     setState(() {
       emailBox = GetStorage().read('email');
@@ -48,6 +71,12 @@ class _SplashScreenState extends State<SplashScreen> {
         () => Get.offAllNamed('/login'),
       );
     }
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    // subscription.cancel();
   }
 
   loginFaculty(email, password) async {
