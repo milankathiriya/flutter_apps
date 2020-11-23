@@ -8,6 +8,13 @@ import 'package:student_finder_rnw/views/screens/home_screen.dart';
 import 'package:student_finder_rnw/views/screens/login_screen.dart';
 import 'package:student_finder_rnw/views/screens/splash_screen.dart';
 import 'package:student_finder_rnw/views/screens/student/student_screen.dart';
+import 'package:flutter_launcher_icons/android.dart';
+import 'package:flutter_launcher_icons/constants.dart';
+import 'package:flutter_launcher_icons/custom_exceptions.dart';
+import 'package:flutter_launcher_icons/ios.dart';
+import 'package:flutter_launcher_icons/main.dart';
+import 'package:flutter_launcher_icons/utils.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 
 /*
 Red :- #e31e25
@@ -29,13 +36,12 @@ void main() async {
     // status bar color
     statusBarBrightness: Brightness.dark,
     //status bar brightness
-    statusBarIconBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
     //status barIcon Brightness
     systemNavigationBarDividerColor: Colors.redAccent,
     //Navigation bar divider color
     systemNavigationBarIconBrightness: Brightness.light, //navigation bar icon
   ));
-
 
   await GetStorage.init();
 
@@ -45,8 +51,8 @@ void main() async {
       initialRoute: '/splash',
       getPages: [
         GetPage(
-            name: '/',
-            page: () => HomePage(),
+          name: '/',
+          page: () => HomePage(),
         ),
         GetPage(
           name: '/splash',
