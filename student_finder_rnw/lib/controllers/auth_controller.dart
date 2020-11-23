@@ -17,11 +17,10 @@ class AuthController extends GetxController {
     var r = await loginFaculty(email, password, token);
     print("r => ${r.msg}");
 
-    if(r.msg.isNotEmpty){
+    if (r.msg.isNotEmpty) {
       success.value = false;
       return false;
-    }
-    else{
+    } else {
       success.value = true;
       return true;
     }
@@ -29,14 +28,14 @@ class AuthController extends GetxController {
 
   Future<FacultyLoginModel> loginFaculty(email, password, token) async {
     // TODO: enable below lines in production mode
-    // final res = await http.post(
-    //     'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
-    //     body: {'email': email, 'password': password, 'mac_address': token});
-
-    // TODO: Use below lines in development mode
     final res = await http.post(
         'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
-        body: {'email': email, 'password': password, 'mac_address': '6dbb9ef20df7ebb8'});
+        body: {'email': email, 'password': password, 'mac_address': token});
+
+    // TODO: Use below lines in development mode
+    // final res = await http.post(
+    //     'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
+    //     body: {'email': email, 'password': password, 'mac_address': '6dbb9ef20df7ebb8'});
 
     if (res.statusCode == 200) {
       if (res.body.isNotEmpty) {
@@ -53,11 +52,11 @@ class AuthController extends GetxController {
           facultyDetail.branch_id = o1.branch_id;
           facultyDetail.department_id = o1.department_id;
           String base_img_path = "https://demo.rnwmultimedia.com/dist/img/";
-          String demo_img_path = "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
-          try{
+          String demo_img_path =
+              "https://demo.rnwmultimedia.com/dist/img/RNW_1.jpeg";
+          try {
             facultyDetail.image = base_img_path + o1.image?.split('/')?.last;
-          }
-          catch(e){
+          } catch (e) {
             facultyDetail.image = demo_img_path;
           }
           return FacultyLoginModel.fromJson(data);
