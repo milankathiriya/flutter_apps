@@ -10,7 +10,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="student_finder_rnw"
+        android:label="Student Finder"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
