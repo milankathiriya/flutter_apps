@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -60,15 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
           alignment: Alignment.center,
           children: [
             Container(
-              height: Get.height*0.885,
+              height: Get.height * 0.885,
               child: Column(
                 children: [
-                  Spacer(flex: 1,),
+                  Spacer(
+                    flex: 1,
+                  ),
                   CircleAvatar(
                     radius: 80,
                     backgroundImage: AssetImage("assets/images/rnw.jpg"),
                   ),
-                  Spacer(flex: 3,),
+                  Spacer(
+                    flex: 3,
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 25),
                     child: Column(
@@ -79,7 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               TextFormField(
                                 controller: _emailController,
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
@@ -93,8 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                                 },
                                 textInputAction: TextInputAction.next,
-                                onFieldSubmitted: (val){
-                                  FocusScope.of(context).requestFocus(passwordFocus);
+                                onFieldSubmitted: (val) {
+                                  FocusScope.of(context)
+                                      .requestFocus(passwordFocus);
                                 },
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.email),
@@ -126,7 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 controller: _passwordController,
                                 focusNode: passwordFocus,
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 obscureText: true,
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
@@ -141,7 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 textInputAction: TextInputAction.done,
                                 onEditingComplete: () async {
-                                  SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                  SystemChannels.textInput
+                                      .invokeMethod('TextInput.hide');
                                   var res = await validateAndLogin();
                                   print(res);
                                   if (res == 1) {
@@ -149,7 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       _isLoading = true;
                                     });
                                     GetStorage().writeIfNull('email', email);
-                                    GetStorage().writeIfNull('password', password);
+                                    GetStorage()
+                                        .writeIfNull('password', password);
                                     Get.offAllNamed('/');
                                   } else {
                                     setState(() {
@@ -186,26 +196,29 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               (_isLoading == false)
                                   ? FloatingActionButton.extended(
-                                icon: Icon(Icons.login_rounded),
-                                backgroundColor: Theme.of(context).primaryColor,
-                                onPressed: () async {
-                                  var res = await validateAndLogin();
-                                  print(res);
-                                  if (res == 1) {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-                                    GetStorage().writeIfNull('email', email);
-                                    GetStorage().writeIfNull('password', password);
-                                    Get.offAllNamed('/');
-                                  } else {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                },
-                                label: Text("Login"),
-                              )
+                                      icon: Icon(Icons.login_rounded),
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                      onPressed: () async {
+                                        var res = await validateAndLogin();
+                                        print(res);
+                                        if (res == 1) {
+                                          setState(() {
+                                            _isLoading = true;
+                                          });
+                                          GetStorage()
+                                              .writeIfNull('email', email);
+                                          GetStorage().writeIfNull(
+                                              'password', password);
+                                          Get.offAllNamed('/');
+                                        } else {
+                                          setState(() {
+                                            _isLoading = false;
+                                          });
+                                        }
+                                      },
+                                      label: Text("Login"),
+                                    )
                                   : CircularProgressIndicator(),
                               SizedBox(
                                 height: Get.height * 0.020,
@@ -213,10 +226,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               Obx(() {
                                 return (_authController.success.value == false)
                                     ? Text(
-                                  _authController.msg.value,
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.red),
-                                )
+                                        _authController.msg.value,
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.red),
+                                      )
                                     : Text("");
                               }),
                             ],
@@ -225,7 +238,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
-                  Spacer(flex: 1,),
+                  Spacer(
+                    flex: 1,
+                  ),
                 ],
               ),
             ),

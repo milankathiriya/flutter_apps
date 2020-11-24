@@ -28,14 +28,14 @@ class AuthController extends GetxController {
 
   Future<FacultyLoginModel> loginFaculty(email, password, token) async {
     // TODO: enable below lines in production mode
-    final res = await http.post(
-        'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
-        body: {'email': email, 'password': password, 'mac_address': token});
-
-    // TODO: Use below lines in development mode
     // final res = await http.post(
     //     'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
-    //     body: {'email': email, 'password': password, 'mac_address': '6dbb9ef20df7ebb8'});
+    //     body: {'email': email, 'password': password, 'mac_address': token});
+
+    // TODO: Use below lines in development mode
+    final res = await http.post(
+        'https://demo.rnwmultimedia.com/eduzila_api/Android_api/login.php',
+        body: {'email': email, 'password': password, 'mac_address': '6dbb9ef20df7ebb8'});
 
     if (res.statusCode == 200) {
       if (res.body.isNotEmpty) {
